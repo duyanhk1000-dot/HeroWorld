@@ -1,0 +1,58 @@
+# Render Blueprint — Đấu Trường Nhân Quả (M2 online)
+# Deploy: Render Dashboard → New → Blueprint → connect repo duyanhk1000-dot/HeroWorld
+# and point it at this file (server/render.yaml). Set the env vars below by hand
+# in the Render dashboard (they are sync: false on purpose — no secrets in git).
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # Colyseus game server (Node.js + TypeScript). This is the only live service
+  # until the Godot web export exists.
+  - type: web
+    name: dau-truong-nhan-qua-server
+    runtime: node
+    plan: free
+    region: singapore
+    rootDir: server
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+        generateValue: true
+
+  # ---------------------------------------------------------------------------
+  # Static site for the Godot web export — COMMENTED OUT on purpose.
+  # The Godot export templates (~1.28 GB) are NOT installed on this VM yet, so
+  # no .html/.wasm/.pck web export exists to publish. Uncomment this block only
+  # after the web export has been built (see docs/online-architecture.md §6).
+  # ---------------------------------------------------------------------------
+  # - type: web
+  #   name: dau-truong-nhan-qua-web
+  #   runtime: static
+  #   plan: free
+  #   region: singapore
+  #   rootDir: web-export
+  #   buildCommand: echo "web export already built by Godot; nothing to build"
+  #   staticPublishPath: .
+  #   routes:
+  #     - type: rewrite
+  #       source: /*
+  #       destination: /index.html
+  #   headers:
+  #     # Godot 4 web export with threads needs these; only set them once the
+  #     # export is built with threads enabled. Without threads they are not needed.
+  #     - path: /*
+  #       name: Cross-Origin-Opener-Policy
+  #       value: same-origin
+  #     - path: /*
+  #       name: Cross-Origin-Embedder-Policy
+  #       value: require-corp

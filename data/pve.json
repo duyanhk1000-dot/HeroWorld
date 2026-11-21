@@ -1,0 +1,146 @@
+{
+  "config_version": "2.1.0",
+  "note": "PvE monsters use the same combat formulas (SRS 5). HP/ATK scale with stage.",
+  "pve_rounds": {
+    "1-1": {
+      "name": "Quái rừng",
+      "units": [
+        {
+          "name": "Sói rừng",
+          "hp": 420,
+          "atk": 32,
+          "armor": 10,
+          "mr": 10,
+          "attack_speed": 0.7,
+          "attack_range": 1,
+          "count": 2
+        }
+      ]
+    },
+    "1-4": {
+      "name": "Quái rừng",
+      "units": [
+        {
+          "name": "Sói rừng",
+          "hp": 520,
+          "atk": 38,
+          "armor": 15,
+          "mr": 15,
+          "attack_speed": 0.7,
+          "attack_range": 1,
+          "count": 3
+        }
+      ]
+    },
+    "1-6": {
+      "name": "Boss Sơn Lâm",
+      "units": [
+        {
+          "name": "Boss Sơn Lâm",
+          "hp": 1500,
+          "atk": 70,
+          "armor": 25,
+          "mr": 25,
+          "attack_speed": 0.7,
+          "attack_range": 1,
+          "count": 1
+        },
+        {
+          "name": "Sói rừng",
+          "hp": 520,
+          "atk": 38,
+          "armor": 15,
+          "mr": 15,
+          "attack_speed": 0.7,
+          "attack_range": 1,
+          "count": 2
+        }
+      ]
+    },
+    "2-4": {
+      "name": "Quái núi",
+      "units": [
+        {
+          "name": "Golem đá",
+          "hp": 800,
+          "atk": 50,
+          "armor": 25,
+          "mr": 20,
+          "attack_speed": 0.6,
+          "attack_range": 1,
+          "count": 3
+        }
+      ]
+    },
+    "2-6": {
+      "name": "Boss Golem Cổ",
+      "units": [
+        {
+          "name": "Boss Golem Cổ",
+          "hp": 2200,
+          "atk": 85,
+          "armor": 35,
+          "mr": 30,
+          "attack_speed": 0.7,
+          "attack_range": 1,
+          "count": 1
+        },
+        {
+          "name": "Golem đá",
+          "hp": 800,
+          "atk": 50,
+          "armor": 25,
+          "mr": 20,
+          "attack_speed": 0.6,
+          "attack_range": 1,
+          "count": 2
+        }
+      ]
+    },
+    "3-4": {
+      "name": "Quái núi",
+      "units": [
+        {
+          "name": "Golem đá",
+          "hp": 1050,
+          "atk": 62,
+          "armor": 30,
+          "mr": 25,
+          "attack_speed": 0.6,
+          "attack_range": 1,
+          "count": 3
+        }
+      ]
+    },
+    "3-6": {
+      "name": "Boss Golem Cổ",
+      "units": [
+        {
+          "name": "Boss Golem Cổ",
+          "hp": 2900,
+          "atk": 100,
+          "armor": 40,
+          "mr": 35,
+          "attack_speed": 0.7,
+          "attack_range": 1,
+          "count": 1
+        },
+        {
+          "name": "Golem đá",
+          "hp": 1050,
+          "atk": 62,
+          "armor": 30,
+          "mr": 25,
+          "attack_speed": 0.6,
+          "attack_range": 1,
+          "count": 2
+        }
+      ]
+    }
+  },
+  "stage_scaling": {
+    "hp_per_stage": 1.35,
+    "atk_per_stage": 1.2,
+    "note": "Stages beyond 3 reuse stage-3 entries scaled by these factors per extra stage."
+  }
+}
