@@ -3,13 +3,15 @@
 Synced 2026-11-21 from staging `ohmygame_assets/` (validated Godot output).
 Source of truth for generation: `canvas/ASSET_LIST.md`, `canvas/HEROES_RESEARCH.md`.
 
-## Portraits — 15/21 usable (1600x1600)
+## Portraits — 17/21 usable (1600x1600)
 
 3 CN portraits were portrait-orientation in staging (1120x2240 / 1280x1920) and were
 center-cropped to 1600x1600 square on sync: cn_quan_vu, cn_lu_bo, cn_hau_nghe.
-EXCLUDED on purpose: vn_yet_kieu_portrait.png (wrong art — drawn female + modern scuba
-gear; hero is male, see canvas/HEROES_RESEARCH.md audit). Missing (generation blocked,
-not retried): vn_hai_ba_trung, vn_tran_hung_dao, cn_kinh_kha, jp_hanzo, jp_nobunaga.
+vn_yet_kieu redrawn 2026-11-21 per user direction: 25-year-old Vietnamese male fisherman,
+bare-chested, tanned muscular build, topknot, hand axe + chisel, fishing net over shoulder
+(replaces the old wrong art — female + modern scuba gear, now overwritten).
+Missing (generation blocked, not retried): vn_hai_ba_trung, vn_tran_hung_dao, cn_kinh_kha,
+jp_hanzo, jp_nobunaga.
 
 - cn_hau_nghe_portrait.png
 - cn_khong_minh_portrait.png
@@ -26,6 +28,7 @@ not retried): vn_hai_ba_trung, vn_tran_hung_dao, cn_kinh_kha, jp_hanzo, jp_nobun
 - vn_chu_dong_tu_portrait.png
 - vn_son_tinh_portrait.png
 - vn_thanh_giong_portrait.png
+- vn_yet_kieu_portrait.png
 
 ## Skill icons — 21/21 (1600x1600, circular flat, thin gold ring)
 
@@ -114,4 +117,4 @@ not retried): vn_hai_ba_trung, vn_tran_hung_dao, cn_kinh_kha, jp_hanzo, jp_nobun
 
 - media-generation-*.json (generation metadata, stays in staging only)
 - canvas/ui_*.png (UI mockups — design reference only, not runtime assets)
-
+vn_tran_hung_dao_portrait.png

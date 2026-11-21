@@ -56,7 +56,7 @@
 - **KHÔNG ĐƯỢC VẼ:** nam; trang phục Trung Quốc đời Thanh / Nhật Bản; voi châu Phi; áo hiện đại.
 - **Prompt seed:** "Stylized 2.5D game portrait, bust, 3/4 front, dark-teal background, no text. A young Vietnamese warrior queen, female, long black hair in high bun, jade-green and gold ancient Vietnamese armor, holding a bronze sword, war-elephant motif behind her shoulder, determined expression."
 
-### 3. vn_yet_kieu — Yết Kiêu (ASSASSIN, 1g) — NAM ⚠️ CHÂN DUNG CŨ ĐÃ SAI
+### 3. vn_yet_kieu — Yết Kiêu (ASSASSIN, 1g) — NAM ⚠️ CHÂN DUNG CŨ ĐÃ SAI — ĐÃ VẼ LẠI 2026-11-21 theo hướng người dùng chọn: nam Việt 25 tuổi, nghề chài lưới, cởi trần, cơ bắp rám nắng, tóc búi, rìu + đục, lưới chài quàng vai (ảnh mới đã thay thế ảnh cũ sai)
 - **Giới tính:** nam (tên thật Phạm Hữu Thế). Nguồn: https://vi.wikipedia.org/wiki/Y%E1%BA%BFt_Ki%C3%AAu — infobox ghi "Giới tính | nam".
 - **Thật / huyền thoại:** người thật, tướng thủy quân nhà Trần (1242–1303), nổi tiếng **lặn giỏi, đục thủng thuyền giặc ban đêm** trong kháng chiến chống Nguyên-Mông.
 - **Ngoại hình:** nam trung niên, thân hình rắn chắc, da rám nắng, tóc búi gọn; mắt sắc, thần thái lặng lẽ.

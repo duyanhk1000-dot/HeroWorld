@@ -112,11 +112,11 @@ static func timeline_stats(steps: Array) -> Dictionary:
 			counts[k] = int(counts[k]) + 1
 	return counts
 
-# Known-wrong art that must never be shown: vn_yet_kieu_portrait.png depicts
-# a woman in modern scuba gear; Yết Kiêu is male (see canvas/HEROES_RESEARCH.md).
+# Portrait path: every hero loads res://assets/<unit_id>_portrait.png when present.
+# (An earlier guard excluded vn_yet_kieu because its old portrait was wrong art —
+# female + modern scuba gear. It was redrawn 2026-11-21 as a male fisherman and
+# the guard was removed; see canvas/HEROES_RESEARCH.md.)
 static func portrait_path(uid: String) -> String:
-	if uid == "vn_yet_kieu":
-		return ""
 	var p := "res://assets/%s_portrait.png" % uid
 	return p if FileAccess.file_exists(p) else ""
 

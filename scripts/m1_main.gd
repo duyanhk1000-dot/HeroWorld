@@ -14,13 +14,16 @@ const M1CombatView = preload("res://scripts/m1_combat_view.gd")
 var data: Dictionary = {}
 var status_label: Label
 var log_label: Label
+# Set by scripts/m1_gui.gd when it reuses the legacy checks: the GUI runs
+# them itself in its own headless order, so this instance must not quit.
+var skip_auto_headless := false
 
 func _ready() -> void:
 	data = M1Data.load_all()
 	_build_ui()
 	_refresh_ui("M1 san sang: 21 tuong VN/CN/JP, 1 nguoi vs 7 bot Trung binh.")
 	print("M1_READY units=%d" % (data.get("units", {}) as Dictionary).get("units", []).size())
-	if DisplayServer.get_name() == "headless":
+	if DisplayServer.get_name() == "headless" and not skip_auto_headless:
 		_run_headless_test()
 
 func _build_ui() -> void:
