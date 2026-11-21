@@ -66,6 +66,10 @@ export class MatchQueue {
     this.queue = this.queue.filter((q) => q.playerId !== playerId);
   }
 
+  has(playerId: string): boolean {
+    return this.queue.some((q) => q.playerId === playerId);
+  }
+
   get size(): number {
     return this.queue.length;
   }

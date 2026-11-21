@@ -18,6 +18,9 @@ const M1Economy = preload("res://scripts/m1_economy.gd")
 const M1View = preload("res://scripts/m1_view.gd")
 const M1CombatView = preload("res://scripts/m1_combat_view.gd")
 const M1Main = preload("res://scripts/m1_main.gd")
+const OnlineAuth = preload("res://scripts/online_auth.gd")
+const OnlineClient = preload("res://scripts/online_client.gd")
+const OnlineEvents = preload("res://scripts/online_events.gd")
 
 const PHASE_IDLE := 0
 const PHASE_PREP := 1
@@ -39,6 +42,27 @@ var _sample_playing := false
 var _finalized := false
 var _final_ranking: Array = []
 var _headless := false
+
+# --- Online (M2) ---
+# Khi _online = true, moi thao tac prep/combat di qua server (Colyseus,
+# server-authoritative); sim local KHONG duoc dung de quyet dinh ket qua.
+# Che do offline 1 vs 7 bot van giu nguyen khi _online = false.
+var _online := false
+var _online_client: Node = null
+var _online_auth: Node = null
+var _online_mode := "CASUAL"
+var _online_events: Array = []
+var _online_event_keys := {}
+var _online_last_room_state := {}
+var _online_combat_snapshot := {}
+var _online_round_result := {}
+var _online_standings: Array = []
+var _online_players: Array = []
+var _online_shop_known := false
+var _online_status_label: Label
+var _online_casual_btn: Button
+var _online_ranked_btn: Button
+var _online_leave_btn: Button
 
 # UI nodes
 var hp_label: Label
@@ -215,6 +239,27 @@ func _build_ui() -> void:
 	sample_btn.text = "Xem combat mẫu 3v3"
 	sample_btn.pressed.connect(_on_sample_pressed)
 	dbg_row.add_child(sample_btn)
+	# Online (M2): guest chi choi Casual; Ranked can dang nhap (hien tai
+	# client mac dinh guest — xem docs/m2-client-notes.md).
+	var online_row := HBoxContainer.new()
+	online_row.add_theme_constant_override("separation", 8)
+	right.add_child(online_row)
+	_online_casual_btn = Button.new()
+	_online_casual_btn.text = "Online: Casual"
+	_online_casual_btn.pressed.connect(_on_online_pressed.bind("CASUAL"))
+	online_row.add_child(_online_casual_btn)
+	_online_ranked_btn = Button.new()
+	_online_ranked_btn.text = "Online: Ranked"
+	_online_ranked_btn.pressed.connect(_on_online_pressed.bind("RANKED"))
+	online_row.add_child(_online_ranked_btn)
+	_online_leave_btn = Button.new()
+	_online_leave_btn.text = "Rời Online"
+	_online_leave_btn.disabled = true
+	_online_leave_btn.pressed.connect(_on_online_leave_pressed)
+	online_row.add_child(_online_leave_btn)
+	_online_status_label = _mk_label("Offline — 1 người vs 7 bot.", 16)
+	_online_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	right.add_child(_online_status_label)
 	# Round result panel (hidden).
 	result_panel = CenterContainer.new()
 	result_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -413,7 +458,10 @@ func _refresh_ui() -> void:
 	synergy_label.text = "\n".join(lines)
 	# Opponents panel.
 	var opp: Array = []
-	if mm != null:
+	if _online:
+		for p in _online_players:
+			opp.append("%s: %d máu, cấp %d%s" % [String(p.get("display_name", p.get("player_id", "?"))), int(p.get("hp", 0)), int(p.get("level", 1)), "" if bool(p.get("alive", true)) else " (đã loại)"])
+	elif mm != null:
 		for p in mm.players:
 			opp.append("%s: %d máu, bàn %d%s" % [String(p.get("name", "?")), int(p.get("hp", 0)), M1Economy.board_count(p), "" if bool(p.get("alive", false)) else " (đã loại)"])
 	opponents_label.text = "\n".join(opp)
@@ -428,6 +476,13 @@ func _refresh_ui() -> void:
 			b.icon = null
 			continue
 		var uid := String(shop[i])
+		if _online and not _online_shop_known and uid == "?":
+			# Mua "mu": server chua cho biet shop (state rong) — bam de thu
+			# mua o nay, server tra snapshot neu mua duoc, s2c_error neu o trong.
+			b.text = "Ô %d\n(thử mua)" % (i + 1)
+			b.disabled = phase != PHASE_PREP or bench.size() >= 9
+			b.icon = null
+			continue
 		if uid == "":
 			b.text = "(đã mua)"
 			b.disabled = true
@@ -459,7 +514,13 @@ func _refresh_ui() -> void:
 	lock_btn.disabled = phase != PHASE_PREP
 	sell_btn.disabled = phase != PHASE_PREP or String(selected.get("zone", "")) == ""
 	deselect_btn.disabled = String(selected.get("zone", "")) == ""
-	start_btn.disabled = phase != PHASE_PREP
+	if _online:
+		# Server tu bat dau combat khi het gio chuan bi — khong co nut san.
+		start_btn.text = "Chờ server bắt đầu combat"
+		start_btn.disabled = true
+	else:
+		start_btn.text = "BẮT ĐẦU COMBAT"
+		start_btn.disabled = phase != PHASE_PREP
 	_refresh_board_tokens()
 	queue_redraw()
 
@@ -485,8 +546,10 @@ func gui_new_match(match_seed: int) -> void:
 	_refresh_ui()
 
 func gui_buy_shop(slot: int) -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
 		return false
+	if _online:
+		return _online_buy_shop(slot)
 	var shop: Array = human.get("shop", [])
 	if slot < 0 or slot >= shop.size() or String(shop[slot]) == "":
 		_msg("Ô shop trống.")
@@ -501,7 +564,12 @@ func gui_buy_shop(slot: int) -> bool:
 	return ok
 
 func gui_reroll() -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
+		return false
+	if _online:
+		if _online_client.reroll_shop():
+			_msg("Đã gửi yêu cầu làm mới shop (-2 vàng nếu server đồng ý).")
+			return true
 		return false
 	var ok := M1Economy.roll_shop(human, units_data, mm.pool, mm.rng, balance, false)
 	if ok:
@@ -512,7 +580,12 @@ func gui_reroll() -> bool:
 	return ok
 
 func gui_buy_xp() -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
+		return false
+	if _online:
+		if _online_client.buy_xp():
+			_msg("Đã gửi yêu cầu mua 4 XP (-4 vàng nếu server đồng ý).")
+			return true
 		return false
 	var before := int(human.get("level", 1))
 	var ok := M1Economy.buy_xp(human, balance)
@@ -524,6 +597,10 @@ func gui_buy_xp() -> bool:
 	return ok
 
 func gui_toggle_lock(v: bool) -> void:
+	if _online:
+		_online_client.toggle_lock_shop()
+		_msg("Đã gửi yêu cầu %s shop." % ("khóa" if v else "mở khóa"))
+		return
 	if mm == null:
 		return
 	human["lock_shop"] = v
@@ -531,7 +608,12 @@ func gui_toggle_lock(v: bool) -> void:
 	_refresh_ui()
 
 func gui_place_bench_to_board(bench_index: int, cell: int) -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
+		return false
+	if _online:
+		if _online_client.move_unit("BENCH", bench_index, "BOARD", cell):
+			_msg("Đã gửi yêu cầu xếp tướng lên bàn (ô %d)." % cell)
+			return true
 		return false
 	var ok := M1Economy.place_on_board(human, bench_index, cell)
 	if ok:
@@ -542,7 +624,12 @@ func gui_place_bench_to_board(bench_index: int, cell: int) -> bool:
 	return ok
 
 func gui_move_board_unit(from_cell: int, to_cell: int) -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
+		return false
+	if _online:
+		if _online_client.move_unit("BOARD", from_cell, "BOARD", to_cell):
+			_msg("Đã gửi yêu cầu di chuyển tướng trên bàn (ô %d -> %d)." % [from_cell, to_cell])
+			return true
 		return false
 	var board: Array = human.get("board", [])
 	if from_cell < 0 or from_cell >= board.size() or to_cell < 0 or to_cell >= board.size():
@@ -557,7 +644,12 @@ func gui_move_board_unit(from_cell: int, to_cell: int) -> bool:
 	return true
 
 func gui_return_to_bench(cell: int) -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
+		return false
+	if _online:
+		if _online_client.move_unit("BOARD", cell, "BENCH", 0):
+			_msg("Đã gửi yêu cầu đưa tướng về ghế dự bị.")
+			return true
 		return false
 	var board: Array = human.get("board", [])
 	var bench: Array = human.get("bench", [])
@@ -573,12 +665,18 @@ func gui_return_to_bench(cell: int) -> bool:
 	return true
 
 func gui_sell_selected() -> bool:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
 		return false
 	var zone := String(selected.get("zone", ""))
 	var index := int(selected.get("index", -1))
 	if zone == "":
 		_msg("Chưa chọn tướng nào để bán.")
+		return false
+	if _online:
+		if _online_client.sell_unit(zone, index):
+			_msg("Đã gửi yêu cầu bán tướng (%s %d) — chờ server trả lời." % [zone, index])
+			_clear_selection()
+			return true
 		return false
 	var unit: Dictionary = {}
 	if zone == "BENCH":
@@ -603,6 +701,8 @@ func gui_sell_selected() -> bool:
 	return ok
 
 func gui_start_combat() -> Dictionary:
+	if _online:
+		return {} # Online: server tu bat dau combat khi het gio chuan bi.
 	if phase != PHASE_PREP or mm == null:
 		return {}
 	var summary: Dictionary = mm.manual_resolve_round()
@@ -635,10 +735,30 @@ func _on_combat_finished() -> void:
 		_msg("Đã xem xong combat mẫu.")
 		_refresh_ui()
 		return
+	if _online:
+		# Replay online xong: neu server da sang PREP vong sau thi ve PREP,
+		# khong thi hien panel ket qua vong (du lieu tu server).
+		_apply_online_phase()
+		if phase != PHASE_PREP:
+			phase = PHASE_RESULT
+			_show_result_panel()
+		_refresh_ui()
+		return
 	phase = PHASE_RESULT
 	_show_result_panel()
 
 func _show_result_panel() -> void:
+	if _online:
+		var won: bool = String(_online_round_result.get("result", "")) == "win"
+		var lines: Array = []
+		lines.append("Vòng %d — %s" % [int(_online_round_result.get("round_id", 0)), "THẮNG" if won else "THUA"])
+		lines.append("Mất %d máu nhà (còn %d/100). Thu nhập +%d vàng (hiện có %d)." % [int(_online_round_result.get("damage_taken", 0)), int(human.get("hp", 0)), int(_online_round_result.get("gold_earned", 0)), int(human.get("gold", 0))])
+		for e in (_online_round_result.get("eliminated", []) as Array):
+			lines.append("%s bị loại." % String(e))
+		result_label.text = "\n".join(lines)
+		result_panel.visible = true
+		_refresh_ui()
+		return
 	var pr: Dictionary = (round_summary.get("player_results", {}) as Dictionary).get(0, {})
 	var won: bool = bool(pr.get("won", false))
 	var lines: Array = []
@@ -653,6 +773,11 @@ func _show_result_panel() -> void:
 
 func gui_next_round() -> void:
 	result_panel.visible = false
+	if _online:
+		# Server tu mo vong sau; chi an panel, phase se theo room_state moi.
+		_apply_online_phase()
+		_refresh_ui()
+		return
 	if mm == null:
 		return
 	if mm.manual_is_game_over() or not bool(human.get("alive", false)):
@@ -704,10 +829,280 @@ func _show_game_over() -> void:
 	gameover_panel.visible = true
 	_refresh_ui()
 
+# ------------------------------------------------------------------ online (M2)
+# Khi _online = true, moi thao tac prep/combat di qua server; sim local
+# KHONG duoc dung de quyet dinh ket qua. Cac ham gui_* ben tren branch sang
+# day o dau ham (xem cac guard `if _online` trong tung ham).
+
+func _online_status(text: String) -> void:
+	_online_status_label.text = text
+	_msg(text)
+
+func _on_online_pressed(p_mode: String) -> void:
+	if _online:
+		return
+	if p_mode == "RANKED":
+		# Ranked can JWT (Supabase login); ban nay mac dinh guest.
+		_msg("Ranked cần đăng nhập — bản này đang chơi guest, chỉ Casual được.")
+		return
+	_online_auth = OnlineAuth.new()
+	add_child(_online_auth)
+	var info: Dictionary = _online_auth.login_guest()
+	_online_client = OnlineClient.new()
+	add_child(_online_client)
+	_online_client.configure(_online_auth.server_url)
+	_online_client.queue_status.connect(_online_status)
+	_online_client.queue_matched.connect(_on_online_matched)
+	_online_client.queue_failed.connect(_on_online_failed)
+	_online_client.room_joined.connect(_on_online_joined)
+	_online_client.room_state_received.connect(_on_online_room_state)
+	_online_client.board_snapshot_received.connect(_on_online_snapshot)
+	_online_client.combat_events_received.connect(_on_online_combat_events)
+	_online_client.round_result_received.connect(_on_online_round_result)
+	_online_client.game_over_received.connect(_on_online_game_over)
+	_online_client.server_error.connect(_on_online_server_error)
+	_online_client.connection_lost.connect(_on_online_connection_lost)
+	_online_client.reconnected.connect(_on_online_reconnected)
+	_online_mode = p_mode
+	_online = true
+	_online_events = []
+	_online_event_keys = {}
+	_online_round_result = {}
+	_online_standings = []
+	_online_players = []
+	_online_shop_known = false
+	_online_casual_btn.disabled = true
+	_online_ranked_btn.disabled = true
+	_online_leave_btn.disabled = false
+	human = {}
+	mm = null
+	_online_client.join_queue(p_mode, String(info.get("player_id", "")), String(info.get("display_name", "Khách")), true)
+
+func _on_online_leave_pressed() -> void:
+	if not _online:
+		return
+	_online_cleanup()
+	_online_status("Đã rời Online — về chế độ offline.")
+	gui_new_match(int(Time.get_unix_time_from_system()) % 100000000 + 1)
+
+func _online_cleanup() -> void:
+	if _online_client != null:
+		_online_client.leave_room()
+		_online_client.queue_free()
+		_online_client = null
+	if _online_auth != null:
+		_online_auth.queue_free()
+		_online_auth = null
+	_online = false
+	_online_casual_btn.disabled = false
+	_online_ranked_btn.disabled = false
+	_online_leave_btn.disabled = true
+
+func _on_online_matched(_room_id: String) -> void:
+	_online_status("Đã ghép trận — đang vào phòng...")
+
+func _on_online_failed(reason: String) -> void:
+	_online_status("Online thất bại: " + reason)
+	_online_cleanup()
+
+func _on_online_joined() -> void:
+	_online_status("Đã vào phòng — chờ server bắt đầu vòng 1.")
+	result_panel.visible = false
+	gameover_panel.visible = false
+	combat_view.visible = false
+	tokens_root.visible = true
+
+func _online_round_info(rid: int) -> Dictionary:
+	var stage := (rid - 1) / 6 + 1
+	var ris := (rid - 1) % 6 + 1
+	var info: Dictionary = _online_client.get_room_info()
+	if int(info.get("stage", 0)) > 0:
+		stage = int(info["stage"])
+		ris = int(info.get("round_in_stage", ris))
+	var kind := "PvP"
+	if ris == 6:
+		kind = "Boss PvE"
+	elif stage == 1 and (ris == 1 or ris == 4):
+		kind = "PvE"
+	elif stage >= 2 and ris == 4:
+		kind = "PvE"
+	return {"round": rid, "stage": stage, "type": kind}
+
+func _on_online_room_state(msg: Dictionary) -> void:
+	if not _online:
+		return
+	_online_last_room_state = msg
+	_online_players = _online_client.get_players()
+	round_info = _online_round_info(int(msg.get("round_id", 0)))
+	prep_timer = float(msg.get("countdown_sec", 0))
+	_apply_online_room_numbers()
+	_apply_online_phase()
+	_refresh_ui()
+
+func _apply_online_room_numbers() -> void:
+	if human.is_empty() or _online_client == null:
+		return
+	var me: Dictionary = _online_client.my_player_info()
+	if me.is_empty():
+		return
+	human["hp"] = int(me.get("hp", human.get("hp", 100)))
+	human["gold"] = int(me.get("gold", human.get("gold", 0)))
+	human["level"] = int(me.get("level", human.get("level", 1)))
+	human["xp_total"] = int(me.get("xp", human.get("xp_total", 0)))
+	human["streak"] = int(me.get("streak", human.get("streak", 0)))
+	human["alive"] = bool(me.get("alive", true))
+
+func _apply_online_phase() -> void:
+	var ph := String(_online_last_room_state.get("phase", ""))
+	match ph:
+		"PREP_PHASE":
+			# Khong chen ngang replay combat dang chay.
+			if not (phase == PHASE_COMBAT and combat_view.visible):
+				phase = PHASE_PREP
+				_clear_selection()
+		"COMBAT_PHASE":
+			if phase != PHASE_COMBAT:
+				phase = PHASE_COMBAT
+				_online_events = []
+				_online_event_keys = {}
+				_online_combat_snapshot = _online_client.last_snapshot.duplicate(true)
+				_msg("Combat đang diễn ra trên server — chờ chiếu lại...")
+		"GAME_OVER":
+			pass
+		_:
+			pass
+
+func _on_online_snapshot(msg: Dictionary) -> void:
+	if not _online:
+		return
+	_apply_online_snapshot(msg)
+	_refresh_ui()
+
+func _apply_online_snapshot(msg: Dictionary) -> void:
+	var board56: Array = []
+	board56.resize(56)
+	for i in range(56):
+		board56[i] = null
+	var b: Dictionary = msg.get("board", {})
+	for k in b.keys():
+		var cell := int(k)
+		if cell >= 0 and cell < 56:
+			board56[cell] = b[k]
+	if human.is_empty():
+		human = {"hp": 100, "gold": 5, "level": 1, "xp_total": 0, "board": board56,
+			"bench": [], "shop": ["?", "?", "?", "?", "?"], "lock_shop": false,
+			"streak": 0, "streak_result": "", "alive": true}
+	else:
+		human["board"] = board56
+		human["bench"] = msg.get("bench", [])
+	_apply_online_room_numbers()
+	_apply_online_shop()
+
+func _apply_online_shop() -> void:
+	if _online_client == null:
+		return
+	var shop: Array = _online_client.get_shop()
+	_online_shop_known = not shop.is_empty()
+	if _online_shop_known:
+		human["shop"] = shop
+	elif not human.has("shop") or (human.get("shop", []) as Array).is_empty():
+		human["shop"] = ["?", "?", "?", "?", "?"]
+	if _online_client.schema_state_available:
+		var p: Dictionary = _online_client.schema.player_dict(_online_client.player_id)
+		if p.has("shopLocked"):
+			human["lock_shop"] = bool(p["shopLocked"])
+
+func _on_online_combat_events(msg: Dictionary) -> void:
+	if not _online:
+		return
+	var rid := int(msg.get("round_id", 0))
+	for e in (msg.get("events", []) as Array):
+		if typeof(e) != TYPE_DICTIONARY:
+			continue
+		# Chong trung khi reconnect: server gui lai event 2s gan nhat.
+		var key := "%d|%d|%s|%s|%s" % [rid, int(e.get("tick", 0)), String(e.get("type", "")),
+			String(e.get("unit_uid", "")), String(e.get("target_uid", ""))]
+		if _online_event_keys.has(key):
+			continue
+		_online_event_keys[key] = true
+		_online_events.append(e)
+
+func _on_online_round_result(msg: Dictionary) -> void:
+	if not _online:
+		return
+	_online_round_result = msg
+	human["streak_result"] = "W" if String(msg.get("result", "")) == "win" else "L"
+	if not _online_events.is_empty():
+		var parts: Dictionary = OnlineEvents.translate_round(_online_events,
+			_online_combat_snapshot, _online_client.player_id,
+			units_data, data.get("pve", {}), balance)
+		var all: Array = []
+		all.append_array(parts.get("defs_a", []))
+		all.append_array(parts.get("defs_b", []))
+		tokens_root.visible = false
+		combat_view.visible = true
+		combat_view.speed = 4.0
+		combat_view.play_combat(all, parts.get("result", {}), parts.get("casters", {}))
+		phase = PHASE_COMBAT
+		_refresh_ui()
+	else:
+		phase = PHASE_RESULT
+		_show_result_panel()
+	_online_events = []
+	_online_event_keys = {}
+
+func _on_online_game_over(msg: Dictionary) -> void:
+	if not _online:
+		return
+	_online_standings = msg.get("standings", [])
+	phase = PHASE_GAMEOVER
+	_show_online_game_over()
+
+func _show_online_game_over() -> void:
+	var my_rank := 0
+	var my_mmr := 0
+	for s in _online_standings:
+		if String((s as Dictionary).get("player_id", "")) == _online_client.player_id:
+			my_rank = int((s as Dictionary).get("placement", 0))
+			my_mmr = int((s as Dictionary).get("mmr_delta", 0))
+	var names := {}
+	for p in _online_players:
+		names[String((p as Dictionary).get("player_id", ""))] = String((p as Dictionary).get("display_name", (p as Dictionary).get("player_id", "?")))
+	gameover_title.text = "Kết thúc trận Online — Bạn hạng #%d (MMR %+d)" % [my_rank, my_mmr]
+	var lines: Array = []
+	for s in _online_standings:
+		var pid := String((s as Dictionary).get("player_id", "?"))
+		lines.append("#%d %s (MMR %+d)" % [int((s as Dictionary).get("placement", 0)),
+			String(names.get(pid, pid)), int((s as Dictionary).get("mmr_delta", 0))])
+	gameover_label.text = "\n".join(lines)
+	gameover_panel.visible = true
+	_refresh_ui()
+
+func _on_online_server_error(code: String, message: String) -> void:
+	_msg("Server từ chối (%s): %s" % [code, message])
+	_refresh_ui()
+
+func _on_online_connection_lost(will_retry: bool) -> void:
+	if will_retry:
+		_online_status("Mất kết nối — đang thử nối lại...")
+	else:
+		_online_status("Mất kết nối — không nối lại được. Bấm Rời Online để chơi offline.")
+		_refresh_ui()
+
+func _on_online_reconnected() -> void:
+	_online_status("Đã nối lại — đồng bộ lại bàn cờ.")
+
+# Gui hanh dong online qua server (tra ve true khi da gui).
+func _online_buy_shop(slot: int) -> bool:
+	if _online_client.buy_shop(slot):
+		_msg("Đã gửi yêu cầu mua ô %d — chờ server trả lời." % (slot + 1))
+		return true
+	return false
+
 # ------------------------------------------------------------------ input
 
 func _unhandled_input(event: InputEvent) -> void:
-	if phase != PHASE_PREP or mm == null:
+	if phase != PHASE_PREP or (mm == null and not _online):
 		return
 	if event is InputEventMouseButton and event.pressed:
 		var cell := _cell_at_point((event as InputEventMouseButton).position)
@@ -737,12 +1132,18 @@ func _on_board_cell_clicked(cell: int) -> void:
 				_clear_selection()
 		else:
 			# Swap bench unit with the board unit.
-			var tmp = board[cell]
-			board[cell] = bench[index]
-			bench[index] = tmp
-			_msg("Đã đổi tướng ghế dự bị với tướng trên bàn.")
-			_clear_selection()
-			_refresh_ui()
+			if _online:
+				_online_client.move_unit("BENCH", index, "BOARD", cell)
+				_msg("Đã gửi yêu cầu đổi tướng ghế dự bị với tướng trên bàn.")
+				_clear_selection()
+				_refresh_ui()
+			else:
+				var tmp = board[cell]
+				board[cell] = bench[index]
+				bench[index] = tmp
+				_msg("Đã đổi tướng ghế dự bị với tướng trên bàn.")
+				_clear_selection()
+				_refresh_ui()
 	elif zone == "BOARD":
 		if index == cell:
 			_clear_selection()
@@ -776,11 +1177,17 @@ func _on_bench_pressed(index: int) -> void:
 		if sel == index:
 			_clear_selection()
 		else:
-			var tmp = bench[sel]
-			bench[sel] = bench[index]
-			bench[index] = tmp
-			_clear_selection()
-			_msg("Đã đổi chỗ 2 tướng trên ghế dự bị.")
+			if _online:
+				_online_client.move_unit("BENCH", sel, "BENCH", index)
+				_msg("Đã gửi yêu cầu đổi chỗ 2 tướng trên ghế dự bị.")
+				_clear_selection()
+				_refresh_ui()
+			else:
+				var tmp = bench[sel]
+				bench[sel] = bench[index]
+				bench[index] = tmp
+				_clear_selection()
+				_msg("Đã đổi chỗ 2 tướng trên ghế dự bị.")
 		_refresh_ui()
 	else:
 		selected = {"zone": "BENCH", "index": index}
@@ -810,9 +1217,14 @@ func _on_next_round_pressed() -> void:
 
 func _on_play_again_pressed() -> void:
 	gameover_panel.visible = false
+	if _online:
+		_on_online_leave_pressed()
+		return
 	gui_new_match(int(Time.get_unix_time_from_system()) % 100000000 + 1)
 
 func _on_auto_match_pressed() -> void:
+	if _online:
+		return # offline-only
 	var auto := M1Match.new(int(Time.get_unix_time_from_system()) % 100000000 + 1, data)
 	var res: Dictionary = auto.run_match()
 	var lines: Array = []
@@ -825,6 +1237,8 @@ func _on_auto_match_pressed() -> void:
 	_msg("Trận tự động xong: Top 1 %s." % String((res.get("top1", {}) as Dictionary).get("name", "?")))
 
 func _on_sample_pressed() -> void:
+	if _online:
+		return # offline-only
 	if phase != PHASE_PREP or mm == null:
 		return
 	var parts := _build_sample_combat(777)
@@ -879,12 +1293,14 @@ func _build_sample_combat(combat_seed: int) -> Dictionary:
 # ------------------------------------------------------------------ loop
 
 func _process(delta: float) -> void:
-	if phase == PHASE_PREP and not _headless:
+	if phase == PHASE_PREP and not _headless and not _online:
 		prep_timer -= delta
 		timer_label.text = "Chuẩn bị: %ds" % int(ceil(maxf(prep_timer, 0.0)))
 		if prep_timer <= 0.0:
 			_msg("Hết 30s chuẩn bị — tự động bắt đầu combat.")
 			gui_start_combat()
+	elif phase == PHASE_PREP and _online:
+		timer_label.text = "Chuẩn bị: %ds" % int(ceil(maxf(prep_timer, 0.0)))
 	elif phase == PHASE_COMBAT:
 		if combat_view.playing == false and combat_view.cursor >= combat_view.timeline.size() and combat_view.timeline.size() > 0:
 			_on_combat_finished()

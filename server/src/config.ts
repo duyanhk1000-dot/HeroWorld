@@ -11,6 +11,11 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
+export interface SynergyConfig {
+  nation: Record<string, Record<string, number>>;
+  [classId: string]: Record<string, Record<string, number>>;
+}
+
 export interface BalanceConfig {
   config_version: string;
   protocol_version: number;
@@ -43,6 +48,8 @@ export interface BalanceConfig {
   loser_base_damage_by_stage: Record<string, number>;
   overtime_after_ticks: number;
   move_ticks_per_hex: number;
+  /** Synergy effects by tier (SRS §6), keyed by nation "nation" or class id, then tier "2"/"4"/"6". */
+  synergy: SynergyConfig;
 }
 
 const FALLBACK: BalanceConfig = {
@@ -81,6 +88,50 @@ const FALLBACK: BalanceConfig = {
   loser_base_damage_by_stage: { "1": 0, "2": 2, "3": 4, "4": 6, "5": 9, "6": 12, "7": 15 },
   overtime_after_ticks: 900,
   move_ticks_per_hex: 10,
+  // SRS §6 synergy table, copied from data/balance_config.json (same source
+  // of truth; the loader above prefers the JSON file when it exists).
+  synergy: {
+    nation: {
+      "2": { hp_pct: 0.08 },
+      "4": { hp_pct: 0.18, atk_pct: 0.1 },
+      "6": { hp_pct: 0.3, atk_pct: 0.2, aspd_pct: 0.1 },
+    },
+    GUARDIAN: {
+      "2": { armor: 20, mr: 20 },
+      "4": { team_armor: 15, team_mr: 15 },
+      "6": { shield_pct_hp: 0.25 },
+    },
+    WARRIOR: {
+      "2": { atk_pct: 0.15 },
+      "4": { atk_pct: 0.3, lifesteal: 0.1 },
+      "6": { atk_pct: 0.45, max_hp_damage_pct: 0.05 },
+    },
+    ASSASSIN: {
+      "2": { crit_pct: 0.15 },
+      "4": { crit_pct: 0.3, crit_dmg_pct: 0.2 },
+      "6": { early_dmg_pct: 0.3, early_seconds: 3.0 },
+    },
+    ARCHER: {
+      "2": { aspd_pct: 0.15 },
+      "4": { aspd_pct: 0.3, range_bonus: 1 },
+      "6": { aspd_pct: 0.45, extra_target_every: 3 },
+    },
+    MAGE: {
+      "2": { ap_pct: 0.2 },
+      "4": { ap_pct: 0.4 },
+      "6": { ap_pct: 0.65, first_skill_bonus_mana: 30 },
+    },
+    STRATEGIST: {
+      "2": { start_mana: 10 },
+      "4": { start_mana: 20, mana_regen_pct: 0.1 },
+      "6": { shred_pct: 0.2, shred_duration_sec: 4.0 },
+    },
+    DIVINE: {
+      "2": { all_pct: 0.1 },
+      "4": { all_pct: 0.2 },
+      "6": { all_pct: 0.35, death_explosion_true_damage: 300 },
+    },
+  },
 };
 
 export function loadBalanceConfig(): BalanceConfig {
@@ -112,6 +163,12 @@ export interface ServerEnv {
   supabaseServiceRoleKey: string;
   port: number;
   allowedOrigins: string[];
+  /**
+   * Test-only fast mode (M2_FAST=1): prep 3 s, combat 12 s, so the e2e
+   * smoke test finishes in seconds. Never set in production: it changes
+   * the phase timers for every room on the instance.
+   */
+  fastMode: boolean;
 }
 
 export function loadEnv(): ServerEnv {
@@ -125,6 +182,7 @@ export function loadEnv(): ServerEnv {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean),
+    fastMode: process.env.M2_FAST === "1",
   };
 }
 
