@@ -14,7 +14,7 @@ Game: Đấu Trường Nhân Quả (auto-chess). 4 tướng này công cụ vẽ
 
 ---
 
-## 1. Hai Bà Trưng — NỮ, tướng Việt, WARRIOR (cưỡi voi chiến)
+## 1. Hai Bà Trưng / Trưng Trắc — NỮ, tướng Việt, WARRIOR (cưỡi voi chiến) — ✅ ĐÃ XONG 21/11 (user vẽ bằng ChatGPT, đã đưa vào game; tướng đổi tên thành Trưng Trắc)
 
 **Prompt (copy nguyên đoạn này):**
 
@@ -25,7 +25,7 @@ Game: Đấu Trường Nhân Quả (auto-chess). 4 tướng này công cụ vẽ
 - KHÔNG ĐƯỢC VẼ: nam; trang phục Trung Quốc đời Thanh; voi châu Phi; áo hiện đại.
 - Tông màu: xanh ngọc + vàng (nước Việt).
 
-## 2. Kinh Kha — NAM, tướng Trung Quốc, ASSASSIN (đoản kiếm trong bản đồ)
+## 2. Kinh Kha — NAM, tướng Trung Quốc, ASSASSIN (đoản kiếm trong bản đồ) — ✅ ĐÃ XONG 21/11 (user vẽ bằng ChatGPT, đã đưa vào game)
 
 **Prompt (copy nguyên đoạn này):**
 
@@ -36,7 +36,7 @@ Game: Đấu Trường Nhân Quả (auto-chess). 4 tướng này công cụ vẽ
 - KHÔNG ĐƯỢC VẼ: nữ; ninja Nhật Bản (mặt nạ đen, phi tiêu shuriken); kiếm dài; đồ hiện đại.
 - Vũ khí là đoản kiếm giấu trong cuộn bản đồ — đây là chi tiết quan trọng nhất.
 
-## 3. Hattori Hanzo — NAM, tướng Nhật, ASSASSIN (samurai cầm thương)
+## 3. Hattori Hanzo — NAM, tướng Nhật, ASSASSIN (samurai cầm thương) — ✅ ĐÃ XONG 21/11 (user vẽ bằng ChatGPT, đã đưa vào game)
 
 **Prompt (copy nguyên đoạn này):**
 
@@ -47,7 +47,7 @@ Game: Đấu Trường Nhân Quả (auto-chess). 4 tướng này công cụ vẽ
 - KHÔNG ĐƯỢC VẼ: nữ; ninja mặc đồ đen bó toàn thân kiểu phim Hollywood; kiếm rèn (kiểu Kill Bill); mặt nạ sắt.
 - Hanzo ngoài đời là samurai đánh thương, hình ảnh ninja huyền thoại phần lớn là hư cấu sau này.
 
-## 4. Oda Nobunaga — NAM, tướng Nhật, ARCHER (súng hỏa mai, KHÔNG phải cung)
+## 4. Oda Nobunaga — NAM, tướng Nhật, ARCHER (súng hỏa mai, KHÔNG phải cung) — ✅ ĐÃ XONG 21/11 (user vẽ bằng ChatGPT, đã đưa vào game)
 
 **Prompt (copy nguyên đoạn này):**
 

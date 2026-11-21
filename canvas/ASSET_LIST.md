@@ -4,7 +4,7 @@ Style: see STYLE_GUIDE.md. Staging: `ohmygame_assets/`. Do NOT write to `assets/
 
 ## Portraits (21) — status
 - [x] vn_thanh_giong — Thánh Gióng, VN, GUARDIAN, Tre Ngà Hộ Thể — vn_thanh_giong_portrait.png, 2.7 MB, 1600x1600, verified
-- [ ] vn_hai_ba_trung — Hai Bà Trưng, VN, WARRIOR, Voi Chiến Xung Phong — vẫn không vẽ được dù đã đổi sang hướng hero token mới (21/11), không thử lại
+- [x] vn_hai_ba_trung — Trưng Trắc (đổi tên từ Hai Bà Trưng 21/11 vì 2 bà là 2 người; unit_id giữ nguyên vn_hai_ba_trung), VN, WARRIOR, Voi Chiến Xung Phong — DONE 21/11: ảnh do ChatGPT vẽ theo prompt, user gửi, đã resize 1600x1600 và đưa vào assets/
 - [x] vn_yet_kieu — Yết Kiêu, VN, ASSASSIN, Lặn Kích — vn_yet_kieu_portrait.png, 1.8 MB, 1600x1600, ✅ USABLE — redrawn 2026-11-21 per user direction: 25-year-old Vietnamese male fisherman, bare-chested, tanned muscular build, topknot, hand axe + chisel, fishing net over shoulder (old wrong art — female + modern scuba — overwritten)
 - [x] vn_an_duong_vuong — An Dương Vương, VN, ARCHER, Nỏ Thần Liên Châu — vn_an_duong_vuong_portrait.png, 2.0 MB, 1600x1600, verified
 - [x] vn_chu_dong_tu — Chử Đồng Tử, VN, MAGE, Đầm Sen Huyễn Thuật — vn_chu_dong_tu_portrait.png, 2.4 MB, 1600x1600, verified (batch 2)
@@ -12,15 +12,15 @@ Style: see STYLE_GUIDE.md. Staging: `ohmygame_assets/`. Do NOT write to `assets/
 - [x] vn_son_tinh — Sơn Tinh, VN, DIVINE, Núi Tản Viên — vn_son_tinh_portrait.png, 2.7 MB, 1600x1600, verified (batch 2)
 - [x] cn_quan_vu — Quan Vũ, CN, GUARDIAN, Thanh Long Hộ Trận — cn_quan_vu_portrait.png, 2.3 MB, 1120x2240, verified (batch 3) — note: dimensions are portrait 1120x2240, not 1600x1600 as in batches 1-2
 - [x] cn_lu_bo — Lữ Bố, CN, WARRIOR, Vô Song Kích — cn_lu_bo_portrait.png, 2.8 MB, 1280x1920, verified (batch 3) — note: dimensions are portrait 1280x1920, not 1600x1600 as in batches 1-2
-- [ ] cn_kinh_kha — Kinh Kha, CN, ASSASSIN, Đoản Kiếm Dịch Thủy — vẫn không vẽ được dù đã đổi sang hướng hero token mới (21/11), không thử lại
+- [x] cn_kinh_kha — Kinh Kha, CN, ASSASSIN, Đoản Kiếm Dịch Thủy — DONE 21/11: ảnh do ChatGPT vẽ theo prompt, user gửi, đã resize 1600x1600 và đưa vào assets/
 - [x] cn_hau_nghe — Hậu Nghệ, CN, ARCHER, Xạ Nhật — cn_hau_nghe_portrait.png, 2.0 MB, 1120x2240, verified (batch 3) — note: dimensions are portrait 1120x2240, not 1600x1600 as in batches 1-2
 - [x] cn_nu_oa — Nữ Oa, CN, MAGE, Ngũ Sắc Thạch — cn_nu_oa_portrait.png, 1.7 MB, 1600x1600, verified (batch 4) — female, high bun + jade pins, brass compass, 5 colored stones, serpent-scale shoulder; correct per HEROES_RESEARCH.md
 - [x] cn_khong_minh — Khổng Minh, CN, STRATEGIST, Bát Trận Đồ — cn_khong_minh_portrait.png, 2.5 MB, 1600x1600, verified (batch 4) — male, long beard, headscarf, white crane-feather robe + fan, bagua diagram; correct per HEROES_RESEARCH.md
 - [x] cn_ton_ngo_khong — Tôn Ngộ Không, CN, DIVINE, 72 Phép Biến Hóa — cn_ton_ngo_khong_portrait.png, 2.8 MB, 1600x1600, verified (batch 4) — male monkey, golden fur, fiery eyes, golden headband, golden staff, monkey clones; correct per HEROES_RESEARCH.md
 - [x] jp_honda — Honda Tadakatsu, JP, GUARDIAN, Thương Tonbokiri — jp_honda_portrait.png, 2.1 MB, 1600x1600, verified (batch 4) — male, black armor, antler kabuto, rosary beads, Tonbogiri spear, dragonflies; correct per HEROES_RESEARCH.md
 - [x] jp_musashi — Miyamoto Musashi, JP, WARRIOR, Nhị Thiên Nhất Lưu — jp_musashi_portrait.png, 2.0 MB, 1600x1600, verified (batch 5) — male, unkempt tied hair, stubble, worn kimono, dual-wield katana + wakizashi; correct per HEROES_RESEARCH.md (NOT the Fate female version)
-- [ ] jp_hanzo — Hattori Hanzo, JP, ASSASSIN, Ám Sát Trong Bóng — vẫn không vẽ được dù đã đổi sang hướng hero token mới (21/11), không thử lại
-- [ ] jp_nobunaga — Oda Nobunaga, JP, ARCHER, Tam Đoạn Thiết Pháo — batch 5 (21/11): generation was blocked by the tool's safety check (integrity_check_failed); per instruction, not retried or reworded
+- [x] jp_hanzo — Hattori Hanzo, JP, ASSASSIN, Ám Sát Trong Bóng — DONE 21/11: ảnh do ChatGPT vẽ theo prompt, user gửi, đã resize 1600x1600 và đưa vào assets/
+- [x] jp_nobunaga — Oda Nobunaga, JP, ARCHER, Tam Đoạn Thiết Pháo — DONE 21/11: ảnh do ChatGPT vẽ theo prompt, user gửi, đã resize 1600x1600 và đưa vào assets/
 - [x] jp_seimei — Abe no Seimei, JP, MAGE, Ngũ Mang Tinh — jp_seimei_portrait.png, 2.0 MB, 1600x1600, verified (batch 5) — male, white kariginu, tall black eboshi hat, folding fan + ofuda, glowing Seiman pentagram, white fox; correct per HEROES_RESEARCH.md
 - [x] jp_shingen — Takeda Shingen, JP, STRATEGIST, Phong Lâm Hỏa Sơn — jp_shingen_portrait.png, 2.9 MB, 1600x1600, verified (batch 6) — male, shaved head, stern, dark red armor, iron war fan, Fūrinkazan banner (Wind Forest Fire Mountain); correct per HEROES_RESEARCH.md (minor: banner bears the 4 kanji characters as part of the prop)
 - [x] jp_susanoo — Susanoo, JP, DIVINE, Bão Tố Thảo Thế Kiếm — jp_susanoo_portrait.png, 3.7 MB, 1600x1600, verified (batch 6) — male storm god, wild black hair, fierce eyes, white/storm-blue divine armor with gold, Kusanagi sword with lightning, sea waves, eight-headed serpent shadow; correct per HEROES_RESEARCH.md

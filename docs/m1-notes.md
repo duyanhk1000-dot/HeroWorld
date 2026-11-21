@@ -7,7 +7,7 @@ dự án: giữ Godot đã cài sẵn; sim deterministic được viết lại b
 ## File
 
 - `data/units.json` — 21 tướng VN/CN/JP (kèm trường `gender` cho asset team:
-  19 nam, 2 nữ — chỉ Hai Bà Trưng và Nữ Oa là nữ; khớp `canvas/HEROES_RESEARCH.md`).
+  19 nam, 2 nữ — chỉ Trưng Trắc (đổi tên từ Hai Bà Trưng 21/11) và Nữ Oa là nữ; khớp `canvas/HEROES_RESEARCH.md`).
 - `data/balance_config.json` — mọi hệ số cân bằng (star 1.8, tick 20Hz, XP,
   shop odds, pool, synergy, crit/dodge, loser damage).
 - `data/pve.json` — quái PvE/boss theo stage + hệ số scale stage > 3.

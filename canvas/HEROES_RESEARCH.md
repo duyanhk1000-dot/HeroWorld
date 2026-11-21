@@ -46,8 +46,8 @@
 - **KHÔNG ĐƯỢC VẼ:** nữ; ông già; vũ khí hiện đại; áo giáp châu Âu trung cổ.
 - **Prompt seed:** "Stylized 2.5D game portrait, bust, 3/4 front, dark-teal background, no text. A young Vietnamese male giant warrior, strong build, topknot, jade-green and gold iron armor, holding a thick bamboo staff, woven bamboo shield glowing jade-green, iron horse motif."
 
-### 2. vn_hai_ba_trung — Hai Bà Trưng (WARRIOR, 3g) — NỮ
-- **Giới tính:** nữ — **hai chị em Trưng Trắc và Trưng Nhị** (trong game gộp thành một tướng đại diện). Nguồn: https://en.wikipedia.org/wiki/Tr%C6%B0ng_sisters
+### 2. vn_hai_ba_trung — Trưng Trắc (WARRIOR, 3g) — NỮ (đổi tên từ Hai Bà Trưng 21/11: 2 bà là 2 người, tướng này chỉ là chị cả Trưng Trắc; unit_id giữ nguyên vn_hai_ba_trung)
+- **Giới tính:** nữ — Trưng Trắc, chị cả trong hai chị em Trưng Trắc và Trưng Nhị (trong game chỉ dùng một người là Trưng Trắc). Nguồn: https://en.wikipedia.org/wiki/Tr%C6%B0ng_sisters
 - **Thật / huyền thoại:** người thật, lãnh đạo khởi nghĩa 40–43 SCN chống nhà Hán; Trưng Trắc xưng vương.
 - **Ngoại hình:** hai nữ tướng trẻ, tóc dài búi cao / đội mũ, gương mặt cương nghị; thường cưỡi **voi chiến**.
 - **Trang phục:** áo dài chiến / giáp đồng cổ Việt, khăn đóng, tông xanh ngọc + vàng; trang sức vàng.
@@ -273,7 +273,7 @@
 
 **Kết luận audit: chỉ 1/8 sai nội dung (Yết Kiêu). 7/8 còn lại đúng giới tính và ngoại hình chính. 3 ảnh CN sai định dạng (dọc thay vì vuông 1600x1600) — lỗi kỹ thuật, không phải lỗi nội dung.**
 
-Chân dung chưa vẽ (13/21): Hai Bà Trưng, Trần Hưng Đạo, Kinh Kha (3 ảnh từng bị chặn bởi kiểm duyệt công cụ — xem Rules), Nữ Oa, Khổng Minh, Tôn Ngộ Không, Honda Tadakatsu, Miyamoto Musashi, Hattori Hanzo, Oda Nobunaga, Abe no Seimei, Takeda Shingen, Susanoo.
+Chân dung đã đủ 21/21 (21/11): Trưng Trắc, Kinh Kha, Hanzo, Nobunaga do ChatGPT vẽ theo prompt, user gửi. Xem ASSET_LIST.md.
 
 ---
 
