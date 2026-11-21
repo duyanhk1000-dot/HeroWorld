@@ -7,6 +7,7 @@ extends RefCounted
 const M1Hex = preload("res://scripts/m1_hex.gd")
 const M1Data = preload("res://scripts/m1_data.gd")
 const M1Synergy = preload("res://scripts/m1_synergy.gd")
+const M1Bonds = preload("res://scripts/m1_bonds.gd")
 const M1Sim = preload("res://scripts/m1_sim.gd")
 const M1Economy = preload("res://scripts/m1_economy.gd")
 const M1Bot = preload("res://scripts/m1_bot.gd")
@@ -16,6 +17,7 @@ var data: Dictionary = {}
 var balance: Dictionary = {}
 var units_data: Dictionary = {}
 var pve_data: Dictionary = {}
+var bonds_data: Dictionary = {}
 var players: Array = []
 var pool: Dictionary = {}
 var rng: RandomNumberGenerator
@@ -36,6 +38,7 @@ func _init(match_seed: int, loaded_data: Dictionary) -> void:
 	balance = data.get("balance", {})
 	units_data = data.get("units", {})
 	pve_data = data.get("pve", {})
+	bonds_data = data.get("bonds", {})
 	rng = RandomNumberGenerator.new()
 	rng.seed = seed
 	pool = M1Economy.new_pool(units_data, balance)
@@ -91,6 +94,13 @@ func _build_side(player: Dictionary, side: int) -> Array:
 		syn_units.append(d)
 	var syn := M1Synergy.compute(syn_units, balance)
 	var mods_arr: Array = syn.get("unit_mods", [])
+	# M3 Karma Bonds: static effects fold into the same mods array; the
+	# active-bond list rides on every def so the sim can fire triggers.
+	var board_ids: Array = []
+	for d in syn_units:
+		board_ids.append(String(d.get("unit_id", "")))
+	var active_bonds := M1Bonds.active_bonds(board_ids, bonds_data)
+	M1Bonds.apply_static_mods(syn_units, active_bonds, mods_arr)
 	var k := 0
 	for i in range(board.size()):
 		var u = board[i]
@@ -104,7 +114,7 @@ func _build_side(player: Dictionary, side: int) -> Array:
 			"unit_id": d.get("unit_id", ""), "name": d.get("name", "?"),
 			"nation_id": d.get("nation_id", ""), "class_id": d.get("class_id", ""),
 			"star": int(u.get("star", 1)), "stats": d.get("stats_1star", {}),
-			"skill": d.get("skill", {}), "is_pve": false,
+			"skill": d.get("skill", {}), "is_pve": false, "bonds": active_bonds,
 		}
 		_iid_counter += 1
 		defs.append(M1Sim.make_combatant(unit_def, side, idx, mods_arr[k], int(syn.get("team_armor", 0)), int(syn.get("team_mr", 0)), balance, _iid_counter))
@@ -197,6 +207,17 @@ func _shuffle_pairs(alive: Array) -> Dictionary:
 		ghost_player = best[i]
 	return {"pairs": pairs, "ghost": ghost_player}
 
+func _board_has(player: Dictionary, unit_id: String) -> bool:
+	for u in M1Economy.board_units(player):
+		if String(u.get("unit_id", "")) == unit_id:
+			return true
+	return false
+
+# bond_hoang_de (RIVALRY, SRS 7.4): when Napoleon and Arthur face each other
+# in a PvP pair, the winner of that duel deals +2 player damage.
+func _rivalry_pair(a: Dictionary, b: Dictionary) -> bool:
+	return (_board_has(a, "fr_napoleon") and _board_has(b, "uk_arthur")) or (_board_has(a, "uk_arthur") and _board_has(b, "fr_napoleon"))
+
 func _set_streak(player: Dictionary, won: bool) -> void:
 	var res := "W" if won else "L"
 	if String(player.get("streak_result", "")) == res:
@@ -246,7 +267,7 @@ func _bot_prep(skip_human: bool) -> void:
 	for p in alive_players():
 		if skip_human and int(p.get("id", -1)) == 0:
 			continue
-		M1Bot.take_prep_turn(p, units_data, pool, rng, balance)
+		M1Bot.take_prep_turn(p, units_data, pool, rng, balance, bonds_data)
 
 # Run one combat. When it involves the human (human_side 0/1, else -1),
 # snapshot the pre-combat lineups + casters so the GUI can play it back
@@ -296,15 +317,16 @@ func _resolve_round(info: Dictionary) -> Dictionary:
 		if hs >= 0:
 			human_combat = fout["human_combat"]
 		var winner: int = res.get("winner", -1)
+		var rivalry := _rivalry_pair(a, b)
 		if winner == 0:
-			results[int(a.get("id", -1))] = {"won": true, "foe_survivors": int(res.get("survivors_b", 0)), "is_pve": false}
-			results[int(b.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_a", 0)), "is_pve": false}
+			results[int(a.get("id", -1))] = {"won": true, "foe_survivors": int(res.get("survivors_b", 0)), "is_pve": false, "rivalry": rivalry}
+			results[int(b.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_a", 0)), "is_pve": false, "rivalry": rivalry}
 		elif winner == 1:
-			results[int(b.get("id", -1))] = {"won": true, "foe_survivors": int(res.get("survivors_a", 0)), "is_pve": false}
-			results[int(a.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_b", 0)), "is_pve": false}
+			results[int(b.get("id", -1))] = {"won": true, "foe_survivors": int(res.get("survivors_a", 0)), "is_pve": false, "rivalry": rivalry}
+			results[int(a.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_b", 0)), "is_pve": false, "rivalry": rivalry}
 		else:
-			results[int(a.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_b", 0)), "is_pve": false, "draw": true}
-			results[int(b.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_a", 0)), "is_pve": false, "draw": true}
+			results[int(a.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_b", 0)), "is_pve": false, "draw": true, "rivalry": rivalry}
+			results[int(b.get("id", -1))] = {"won": false, "foe_survivors": int(res.get("survivors_a", 0)), "is_pve": false, "draw": true, "rivalry": rivalry}
 		pair_index += 1
 	# Ghost fight (odd survivors, PvP rounds only): result counts for the
 	# real player only; the copied lineup's owner is unaffected (SRS 3.3).
@@ -349,6 +371,8 @@ func _resolve_round(info: Dictionary) -> Dictionary:
 		var damage := 0
 		if not won:
 			damage = base_dmg + foe_surv
+			if bool(r.get("rivalry", false)):
+				damage += 2  # bond_hoang_de: winner of the emperor duel +2.
 			if is_pve:
 				damage = damage / 2  # PvE loss is half, rounded down (SRS 9.3).
 		if not is_pve:

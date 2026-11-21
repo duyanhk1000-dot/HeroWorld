@@ -20,6 +20,7 @@ static func load_all() -> Dictionary:
 		"units": _load_json("res://data/units.json"),
 		"balance": _load_json("res://data/balance_config.json"),
 		"pve": _load_json("res://data/pve.json"),
+		"bonds": _load_json("res://data/karma_bonds.json"),
 	}
 
 static func unit_by_id(units_data: Dictionary, unit_id: String) -> Dictionary:

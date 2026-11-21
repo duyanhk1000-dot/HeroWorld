@@ -3,7 +3,7 @@
 Synced 2026-11-21 from staging `ohmygame_assets/` (validated Godot output).
 Source of truth for generation: `canvas/ASSET_LIST.md`, `canvas/HEROES_RESEARCH.md`.
 
-## Portraits — 21/21 usable (1600x1600)
+## Portraits — 49/49 usable (1600x1600)
 
 3 CN portraits were portrait-orientation in staging (1120x2240 / 1280x1920) and were
 center-cropped to 1600x1600 square on sync: cn_quan_vu, cn_lu_bo, cn_hau_nghe.
@@ -30,7 +30,7 @@ jp_hanzo, jp_nobunaga.
 - vn_thanh_giong_portrait.png
 - vn_yet_kieu_portrait.png
 
-## Skill icons — 21/21 (1600x1600, circular flat, thin gold ring)
+## Skill icons — 49/49 (1600x1600, circular flat, thin gold ring)
 
 - cn_hau_nghe_skill.png
 - cn_khong_minh_skill.png

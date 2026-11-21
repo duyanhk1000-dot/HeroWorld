@@ -12,6 +12,7 @@ extends Node2D
 const M1Hex = preload("res://scripts/m1_hex.gd")
 const M1Data = preload("res://scripts/m1_data.gd")
 const M1Synergy = preload("res://scripts/m1_synergy.gd")
+const M1Bonds = preload("res://scripts/m1_bonds.gd")
 const M1Sim = preload("res://scripts/m1_sim.gd")
 const M1Match = preload("res://scripts/m1_match.gd")
 const M1Economy = preload("res://scripts/m1_economy.gd")
@@ -454,6 +455,18 @@ func _refresh_ui() -> void:
 			lines.append("%s: mốc %d" % [String(k), t2])
 	if lines.is_empty():
 		lines.append("Chưa kích hệ nào (cần 2 tướng cùng nước/lớp).")
+	# M3 Karma Bonds panel (SRS 7.4): active bonds + one member away.
+	var board_ids: Array = []
+	for d in _board_unit_defs():
+		board_ids.append(String(d.get("unit_id", "")))
+	var active_bonds := M1Bonds.active_bonds(board_ids, data.get("bonds", {}))
+	if not active_bonds.is_empty():
+		lines.append("— Karma Bonds —")
+		for bl in M1Bonds.describe_active(active_bonds):
+			lines.append(String(bl))
+	for oa in M1Bonds.one_away(board_ids, data.get("bonds", {})):
+		var miss_name := String(M1Data.unit_by_id(data.get("units", {}), String(oa.get("missing", ""))).get("name", String(oa.get("missing", ""))))
+		lines.append("Bond %s: thiếu %s" % [String(oa.get("name", "?")), miss_name])
 	lines.append("Bàn: %d/%d tướng" % [M1Economy.board_count(human), level])
 	synergy_label.text = "\n".join(lines)
 	# Opponents panel.
@@ -1413,6 +1426,7 @@ func _run_headless_all() -> void:
 	ok = legacy._sanity_checks() and ok
 	ok = legacy._replay_check() and ok
 	ok = legacy._view_check() and ok
+	ok = legacy._m3_check() and ok
 	var _sum := legacy._run_match(20261121)
 	if ok:
 		print("M1_HEADLESS_OK")

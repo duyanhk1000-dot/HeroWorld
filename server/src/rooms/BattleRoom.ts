@@ -59,6 +59,7 @@ import {
   type Zone,
 } from "../economy";
 import { takePrepTurn } from "../bot";
+import { rivalryPair as rivalryPairBoards } from "../bonds";
 import {
   buildGhostCombatants,
   buildPveCombatants,
@@ -342,7 +343,7 @@ export class BattleRoom extends Room<BattleRoomState> {
       if (!eco.alive) continue;
       const seat = this.seats.find((s) => s.playerId === eco.playerId);
       if (seat?.isBot) {
-        takePrepTurn(eco, this.gameData.units, this.pool, this.rng, this.cfg);
+        takePrepTurn(eco, this.gameData.units, this.pool, this.rng, this.cfg, this.gameData.bonds);
         this.syncPlayerState(eco.playerId);
       }
     }
@@ -390,9 +391,9 @@ export class BattleRoom extends Room<BattleRoomState> {
       for (const [ecoA, ecoB] of pairs) {
         ecoA.lastOpponent = ecoB.playerId;
         ecoB.lastOpponent = ecoA.playerId;
-        const a = buildSideCombatants(boardSlots(ecoA), 0, ecoA.playerId, data.units, this.cfg, this.iidCounter);
+        const a = buildSideCombatants(boardSlots(ecoA), 0, ecoA.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
         this.iidCounter = a.nextIid;
-        const b = buildSideCombatants(boardSlots(ecoB), 1, ecoB.playerId, data.units, this.cfg, this.iidCounter);
+        const b = buildSideCombatants(boardSlots(ecoB), 1, ecoB.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
         this.iidCounter = b.nextIid;
         const combat = new PairCombat(a.combatants, b.combatants, this.roundSeed + pairIndex * 7919, this.cfg);
         const key = `pvp:${ecoA.playerId}|${ecoB.playerId}`;
@@ -401,7 +402,7 @@ export class BattleRoom extends Room<BattleRoomState> {
         pairIndex += 1;
       }
       if (ghost) {
-        const gp = buildSideCombatants(boardSlots(ghost), 0, ghost.playerId, data.units, this.cfg, this.iidCounter);
+        const gp = buildSideCombatants(boardSlots(ghost), 0, ghost.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
         this.iidCounter = gp.nextIid;
         let gh: { combatants: ReturnType<typeof buildSideCombatants>["combatants"]; nextIid: number };
         if (this.ghostBoard.length > 0) {
@@ -420,7 +421,7 @@ export class BattleRoom extends Room<BattleRoomState> {
       // PvE / boss: every alive player fights monsters (no pairing).
       let playerIndex = 0;
       for (const eco of alive) {
-        const a = buildSideCombatants(boardSlots(eco), 0, eco.playerId, data.units, this.cfg, this.iidCounter);
+        const a = buildSideCombatants(boardSlots(eco), 0, eco.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
         this.iidCounter = a.nextIid;
         const m = buildPveCombatants(this.state.stage, this.state.roundInStage, data.pve, this.cfg, this.iidCounter);
         this.iidCounter = m.nextIid;
@@ -511,6 +512,10 @@ export class BattleRoom extends Room<BattleRoomState> {
         return { tick: ev.t, type: "damage", unit_uid: uid(ev.a) ?? null, target_uid: uid(ev.b) ?? null, dodged: true };
       case "extra_shot":
         return { tick: ev.t, type: "attack", unit_uid: uid(ev.a) ?? null, target_uid: uid(ev.b) ?? null };
+      case "karma_trigger":
+        // SRS §10.2: karma_trigger events; the bond id rides in skill_id
+        // (no protocol version change — the field is a free-form string).
+        return { tick: ev.t, type: "karma_trigger", unit_uid: uid(ev.a) ?? null, target_uid: uid(ev.b) ?? null, skill_id: ev.bond };
     }
   }
 
@@ -518,6 +523,20 @@ export class BattleRoom extends Room<BattleRoomState> {
     this.clearTimers();
     this.state.phase = "ROUND_RESOLVE";
     this.resolveRound();
+  }
+
+  /** bond_hoang_de (RIVALRY, SRS §7.4): Napoleon vs Arthur in a PvP pair —
+   * the duel winner deals +2 player damage. Mirrors M1Match._rivalry_pair. */
+  private rivalryPair(playerId: string): boolean {
+    const pairing = this.pairings.find((pr) => !pr.ghost && (pr.a === playerId || pr.b === playerId));
+    if (!pairing) return false;
+    const otherId = pairing.a === playerId ? pairing.b : pairing.a;
+    const ecoA = this.economies.get(playerId);
+    const ecoB = this.economies.get(otherId);
+    if (!ecoA || !ecoB) return false;
+    const ids = (eco: PlayerEconomy): string[] =>
+      eco.board.filter((u): u is BoardUnit => u !== null).map((u) => u.unit_id);
+    return rivalryPairBoards(ids(ecoA), ids(ecoB));
   }
 
   /** Apply loser damage (§9.3), income (§4.4), eliminations, then next prep or game over. */
@@ -567,7 +586,8 @@ export class BattleRoom extends Room<BattleRoomState> {
       const income = computeIncome(eco, won && !outcome.isPve, this.cfg);
       eco.gold += income;
       gainRoundXp(eco, this.cfg);
-      const damage = won ? 0 : loserDamage(this.state.stage, outcome.foeSurvivors, this.cfg, outcome.isPve);
+      let damage = won ? 0 : loserDamage(this.state.stage, outcome.foeSurvivors, this.cfg, outcome.isPve);
+      if (!won && !outcome.isPve && this.rivalryPair(eco.playerId)) damage += 2; // bond_hoang_de
       eco.hp = Math.max(0, eco.hp - damage);
       perPlayerResult.set(eco.playerId, { won, damage, income });
       this.syncPlayerState(eco.playerId);

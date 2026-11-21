@@ -3,10 +3,12 @@ extends RefCounted
 # M1 - Medium bot, SRS v2.1 section 11.1.
 # Same rules / pool / shop as the player. Keeps gold toward the 50-gold
 # interest threshold, activates synergy 2, buys by hero value table,
-# positions by class. No items, no bonds (M1 scope).
+# positions by class. No items (M1 scope). M3: buys toward Karma Bonds too
+# (+6 value for a hero that advances a bond the bot already started).
 const M1Hex = preload("res://scripts/m1_hex.gd")
 const M1Data = preload("res://scripts/m1_data.gd")
 const M1Economy = preload("res://scripts/m1_economy.gd")
+const M1Bonds = preload("res://scripts/m1_bonds.gd")
 
 static func _owned_counts(player: Dictionary) -> Dictionary:
 	var counts := {}
@@ -16,7 +18,7 @@ static func _owned_counts(player: Dictionary) -> Dictionary:
 		counts[String(u.get("unit_id", ""))] = int(counts.get(String(u.get("unit_id", "")), 0)) + 1
 	return counts
 
-static func hero_value(player: Dictionary, def: Dictionary, units_data: Dictionary) -> int:
+static func hero_value(player: Dictionary, def: Dictionary, units_data: Dictionary, bonds_data: Dictionary = {}) -> int:
 	var value := int(def.get("cost", 1)) * 10
 	var uid: String = def.get("unit_id", "")
 	var owned := _owned_counts(player)
@@ -24,6 +26,18 @@ static func hero_value(player: Dictionary, def: Dictionary, units_data: Dictiona
 		value += 12  # completes a star-up
 	elif int(owned.get(uid, 0)) == 1:
 		value += 6
+	# M3 Karma Bonds: +6 for a hero that advances a bond the bot already
+	# started (owns >= 1 other member, not yet at the bond's top threshold).
+	if not bonds_data.is_empty():
+		var owned_ids: Array = []
+		for k in owned.keys():
+			owned_ids.append(String(k))
+		owned_ids.append(uid)
+		var active := M1Bonds.active_bonds(owned_ids, bonds_data)
+		for bond in active:
+			if (bond.get("members_on_board", []) as Array).has(uid) and int(bond.get("count", 0)) >= 2:
+				value += 6
+				break
 	# Synergy match: +5 per nation/class already present on board/bench.
 	var nation: String = def.get("nation_id", "")
 	var cls: String = def.get("class_id", "")
@@ -81,7 +95,7 @@ static func _position_units(player: Dictionary, units_data: Dictionary) -> void:
 		if not placed:
 			i += 1
 
-static func take_prep_turn(player: Dictionary, units_data: Dictionary, pool: Dictionary, rng: RandomNumberGenerator, balance: Dictionary) -> void:
+static func take_prep_turn(player: Dictionary, units_data: Dictionary, pool: Dictionary, rng: RandomNumberGenerator, balance: Dictionary, bonds_data: Dictionary = {}) -> void:
 	var level: int = int(player.get("level", 1))
 	# Reserve stays low early so the bot actually fields a team from round 1
 	# (the old 10 + 5*level reserve left the board empty for 4 rounds).
@@ -106,7 +120,7 @@ static func take_prep_turn(player: Dictionary, units_data: Dictionary, pool: Dic
 			var cost := int(def.get("cost", 1))
 			if int(player.get("gold", 0)) < cost:
 				continue
-			var value := hero_value(player, def, units_data)
+			var value := hero_value(player, def, units_data, bonds_data)
 			var keep_reserve := int(player.get("gold", 0)) - cost >= reserve
 			# Urgent: the bot has fewer units on board than its level allows.
 			var urgent := M1Economy.board_count(player) < int(player.get("level", 1))

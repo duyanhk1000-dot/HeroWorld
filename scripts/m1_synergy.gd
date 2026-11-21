@@ -21,6 +21,14 @@ static func _empty_mods() -> Dictionary:
 		"extra_target_every": 0, "first_skill_bonus_mana": 0,
 		"mana_regen_pct": 0.0, "shred_pct": 0.0, "shred_duration_sec": 0.0,
 		"death_explosion_true_damage": 0,
+		# M3 Karma Bonds static keys (scripts/m1_bonds.gd).
+		"dodge": 0.0, "dodge_next_crit": false,
+		"low_hp_aspd_pct": 0.0, "low_hp_damage_taken_pct": 0.0,
+		"cc_immune_first": false,
+		"kill_atk_pct": 0.0, "kill_atk_max_stacks": 0,
+		"crit_burn_pct": 0.0, "crit_burn_duration_sec": 0.0,
+		"chain_targets": 0, "chain_damage_ratio": 0.0,
+		"mr_shred_percent": 0.0, "mr_shred_duration_sec": 0.0,
 	}
 
 # board_units: Array of unit dicts {unit_id, nation_id, class_id} on board.

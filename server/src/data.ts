@@ -8,6 +8,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 import type { BalanceConfig } from "./config";
+import type { BondsData } from "./bonds";
 
 export interface UnitStats {
   hp: number;
@@ -61,6 +62,9 @@ export interface PveData {
 export interface GameData {
   units: UnitDef[];
   pve: PveData;
+  /** Karma Bonds (M3, SRS §7). Null only if the file is missing — the
+   * server still starts, but no bond ever activates. */
+  bonds: BondsData | null;
   loadedFrom: string;
 }
 
@@ -86,14 +90,18 @@ function readJson<T>(file: string): T | null {
 export function loadGameData(): GameData {
   const unitsDoc = readJson<{ units: UnitDef[] }>("units.json");
   const pve = readJson<PveData>("pve.json");
+  const bonds = readJson<BondsData>("karma_bonds.json");
   if (!unitsDoc || !Array.isArray(unitsDoc.units) || unitsDoc.units.length === 0) {
     throw new Error("[data] data/units.json not found or empty — cannot start rooms without hero data");
   }
   if (!pve) {
     throw new Error("[data] data/pve.json not found — cannot start rooms without PvE data");
   }
-  console.log(`[data] loaded ${unitsDoc.units.length} units, ${Object.keys(pve.pve_rounds).length} PvE rounds`);
-  return { units: unitsDoc.units, pve, loadedFrom: "data/" };
+  if (!bonds) {
+    console.warn("[data] data/karma_bonds.json not found — bonds disabled (M3 data missing)");
+  }
+  console.log(`[data] loaded ${unitsDoc.units.length} units, ${Object.keys(pve.pve_rounds).length} PvE rounds, ${bonds?.bonds.length ?? 0} bonds`);
+  return { units: unitsDoc.units, pve, bonds: bonds ?? null, loadedFrom: "data/" };
 }
 
 export function unitById(units: UnitDef[], unitId: string): UnitDef | undefined {

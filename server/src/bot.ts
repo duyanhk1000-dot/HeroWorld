@@ -2,13 +2,14 @@
  * Medium bot — direct port of scripts/m1_bot.gd (SRS §11.1).
  * Same rules / pool / shop as the player. Keeps gold toward the 50-gold
  * interest threshold, activates synergy 2, buys by hero value table,
- * positions by class. No items, no bonds (M1 scope).
+ * positions by class. No items (M1 scope). M3: buys toward Karma Bonds too.
  */
 import type { BalanceConfig } from "./config";
 import type { SeededRng } from "./rng";
 import { rcToIndex } from "./hex";
 import { boardCount, boardUnits, buyShopSlot, buyXp, placeOnBoard, type PlayerEconomy, type SharedPool } from "./economy";
 import { unitById, type UnitDef } from "./data";
+import { activeBonds, type BondsData } from "./bonds";
 
 function ownedCounts(p: PlayerEconomy): Record<string, number> {
   const counts: Record<string, number> = {};
@@ -17,11 +18,23 @@ function ownedCounts(p: PlayerEconomy): Record<string, number> {
   return counts;
 }
 
-export function heroValue(p: PlayerEconomy, def: UnitDef, units: UnitDef[]): number {
+export function heroValue(p: PlayerEconomy, def: UnitDef, units: UnitDef[], bondsData: BondsData | null = null): number {
   let value = def.cost * 10;
   const owned = ownedCounts(p);
   if ((owned[def.unit_id] ?? 0) >= 2) value += 12; // completes a star-up
   else if ((owned[def.unit_id] ?? 0) === 1) value += 6;
+  // M3 Karma Bonds: +6 for a hero that advances a bond the bot already
+  // started (owns >= 1 other member, not yet at the bond's top threshold).
+  if (bondsData) {
+    const ownedIds = [...Object.keys(owned), def.unit_id];
+    const active = activeBonds(ownedIds, bondsData);
+    for (const bond of active) {
+      if (bond.membersOnBoard.includes(def.unit_id) && bond.count >= 2) {
+        value += 6;
+        break;
+      }
+    }
+  }
   let seenN = false;
   let seenC = false;
   const check = (uid: string): void => {
@@ -77,6 +90,7 @@ export function takePrepTurn(
   pool: SharedPool,
   rng: SeededRng,
   cfg: BalanceConfig,
+  bondsData: BondsData | null = null,
 ): void {
   void rng; // bot decisions are deterministic given the shop; no extra draws.
   const level = p.level;
@@ -97,7 +111,7 @@ export function takePrepTurn(
       const def = unitById(units, uid);
       if (!def) continue;
       if (p.gold < def.cost) continue;
-      const value = heroValue(p, def, units);
+      const value = heroValue(p, def, units, bondsData);
       const keepReserve = p.gold - def.cost >= reserve;
       const urgent = boardCount(p) < p.level;
       if (value >= 10 && (keepReserve || urgent || value >= 25) && value > bestValue) {

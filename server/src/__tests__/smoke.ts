@@ -28,6 +28,7 @@ import {
 } from "../economy";
 import { buildSideCombatants, makeCombatant, runCombat } from "../sim";
 import { emptyMods } from "../synergy";
+import { activeBonds, applyStaticMods, rivalryPair } from "../bonds";
 
 const cfg = loadBalanceConfig();
 const data = loadGameData();
@@ -135,6 +136,90 @@ console.log("== economy ==");
   eco2.streak = 3;
   eq("income: 5 + 1 interest + 1 streak = 7", computeIncome(eco2, false, cfg), 7);
   eq("income: +1 PvP win", computeIncome(eco2, true, cfg), 8);
+}
+
+// ------------------------------------------------------------------ bonds (M3)
+
+console.log("== bonds ==");
+{
+  eq("49 units loaded", data.units.length, 49);
+  eq("10 bonds loaded", data.bonds?.bonds.length, 10);
+  const costs: Record<number, number> = {};
+  for (const u of data.units) costs[u.cost] = (costs[u.cost] ?? 0) + 1;
+  eq("cost distribution 12/12/12/8/5", JSON.stringify(costs), JSON.stringify({ 1: 12, 2: 12, 3: 12, 4: 8, 5: 5 }));
+  const female = data.units.filter((u) => (u as unknown as { gender?: string }).gender === "female").length;
+  eq("6 female heroes", female, 6);
+
+  // Bond activation: 3 sam_set members on board → active at threshold 3.
+  const sam = activeBonds(["us_tesla", "az_quetzalcoatl", "vn_chu_dong_tu"], data.bonds);
+  check("bond_sam_set active at 3 members", sam.some((b) => b.bond_id === "bond_sam_set" && b.threshold === 3), JSON.stringify(sam.map((b) => b.bond_id)));
+  const sam2 = activeBonds(["us_tesla", "az_quetzalcoatl"], data.bonds);
+  check("bond_sam_set active at 2 members (threshold 2)", sam2.some((b) => b.bond_id === "bond_sam_set" && b.threshold === 2), "");
+  check("no bond with 1 member", activeBonds(["us_tesla"], data.bonds).length === 0, "");
+
+  // Static team buff: bond_mat_troi tier 2 gives ALL allies +10% crit.
+  {
+    const board = [
+      { unit_id: "cn_hau_nghe", star: 1, idx: 17 },
+      { unit_id: "az_huitzilopochtli", star: 1, idx: 18 },
+    ];
+    const built = buildSideCombatants(board, 0, "p1", data.units, cfg, 0, data.bonds);
+    const crits = built.combatants.map((c) => c.mods.crit);
+    check("bond_mat_troi: all allies +10% crit", crits.every((v) => Math.abs(v - 0.1) < 1e-9), `crits=${crits}`);
+  }
+
+  // Rivalry: Napoleon vs Arthur across a pair.
+  check("rivalry: napoleon vs arthur", rivalryPair(["fr_napoleon"], ["uk_arthur"]), "");
+  check("rivalry: reversed", rivalryPair(["uk_arthur"], ["fr_napoleon"]), "");
+  check("rivalry: same side is not a duel", !rivalryPair(["fr_napoleon", "uk_arthur"], ["us_tesla"]), "");
+  check("rivalry: neither present", !rivalryPair(["us_tesla"], ["uk_arthur"]), "");
+
+  // Bond triggers: one fixed combat per bond; count karma_trigger events.
+  const tanks = [
+    { unit_id: "uk_arthur", star: 1, idx: 17 },
+    { unit_id: "fr_joan", star: 1, idx: 18 },
+    { unit_id: "cn_quan_vu", star: 1, idx: 19 },
+  ];
+  const cases: { bond: string; a: string[]; b: { unit_id: string; star: number; idx: number }[] }[] = [
+    { bond: "bond_sam_set", a: ["us_tesla", "az_quetzalcoatl", "vn_chu_dong_tu"], b: tanks },
+    { bond: "bond_bien_va_song", a: ["vn_yet_kieu", "vn_an_duong_vuong", "uk_robin"], b: tanks },
+    { bond: "bond_co_sac", a: ["fr_joan", "us_lincoln", "vn_hai_ba_trung"], b: [
+      { unit_id: "cn_ton_ngo_khong", star: 1, idx: 17 },
+      { unit_id: "jp_susanoo", star: 1, idx: 18 },
+      { unit_id: "vn_son_tinh", star: 1, idx: 19 },
+    ] },
+    { bond: "bond_tri_thuc", a: ["cn_khong_minh", "fr_nostradamus", "uk_merlin"], b: tanks },
+  ];
+  const fired: Record<string, number> = {};
+  for (const c of cases) {
+    const a = buildSideCombatants(c.a.map((uid, i) => ({ unit_id: uid, star: 1, idx: 17 + i })), 0, "p1", data.units, cfg, 0, data.bonds);
+    const b = buildSideCombatants(c.b, 1, "p2", data.units, cfg, a.nextIid, data.bonds);
+    const res = runCombat(a.combatants, b.combatants, 999, cfg);
+    for (const e of res.events) {
+      if (e.k === "karma_trigger" && e.bond) fired[e.bond] = (fired[e.bond] ?? 0) + 1;
+    }
+  }
+  const triggers = new Set<string>();
+  for (const b of data.bonds?.bonds ?? []) {
+    if (fired[b.bond_id]) for (const th of b.thresholds) triggers.add(th.trigger);
+  }
+  console.log(`  bond triggers fired: ${JSON.stringify(fired)} triggers=${[...triggers].join(",")}`);
+  check(">= 3 bonds fired", Object.keys(fired).length >= 3, `fired=${Object.keys(fired).length}`);
+  check(">= 3 distinct triggers", triggers.size >= 3, `triggers=${triggers.size}`);
+
+  // Determinism with bonds: same seed + same bond lineups → same events.
+  const runBonded = () => {
+    const a = buildSideCombatants(
+      ["us_tesla", "az_quetzalcoatl", "vn_chu_dong_tu"].map((uid, i) => ({ unit_id: uid, star: 1, idx: 17 + i })),
+      0, "p1", data.units, cfg, 0, data.bonds,
+    );
+    const b = buildSideCombatants(tanks, 1, "p2", data.units, cfg, a.nextIid, data.bonds);
+    return runCombat(a.combatants, b.combatants, 4242, cfg);
+  };
+  const rb1 = runBonded();
+  const rb2 = runBonded();
+  eq("bonded sim deterministic: same events JSON", JSON.stringify(rb1.events), JSON.stringify(rb2.events));
+  check("bonded sim emits karma_trigger", rb1.events.some((e) => e.k === "karma_trigger"), "");
 }
 
 // ------------------------------------------------------------------ queue

@@ -35,6 +35,20 @@ export interface UnitMods {
   shred_pct: number;
   shred_duration_sec: number;
   death_explosion_true_damage: number;
+  // M3 Karma Bonds static keys (see bonds.ts).
+  dodge: number;
+  dodge_next_crit: boolean;
+  low_hp_aspd_pct: number;
+  low_hp_damage_taken_pct: number;
+  cc_immune_first: boolean;
+  kill_atk_pct: number;
+  kill_atk_max_stacks: number;
+  crit_burn_pct: number;
+  crit_burn_duration_sec: number;
+  chain_targets: number;
+  chain_damage_ratio: number;
+  mr_shred_percent: number;
+  mr_shred_duration_sec: number;
 }
 
 export function emptyMods(): UnitMods {
@@ -47,6 +61,14 @@ export function emptyMods(): UnitMods {
     extra_target_every: 0, first_skill_bonus_mana: 0,
     mana_regen_pct: 0, shred_pct: 0, shred_duration_sec: 0,
     death_explosion_true_damage: 0,
+    // M3 Karma Bonds static keys (see bonds.ts).
+    dodge: 0, dodge_next_crit: false,
+    low_hp_aspd_pct: 0, low_hp_damage_taken_pct: 0,
+    cc_immune_first: false,
+    kill_atk_pct: 0, kill_atk_max_stacks: 0,
+    crit_burn_pct: 0, crit_burn_duration_sec: 0,
+    chain_targets: 0, chain_damage_ratio: 0,
+    mr_shred_percent: 0, mr_shred_duration_sec: 0,
   };
 }
 
