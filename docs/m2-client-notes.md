@@ -79,7 +79,20 @@ sau khi server sửa (test `online_test.gd` sẽ in `shop known: true`).
   nút Ranked bị chặn; `online_auth.gd` đã có `login_email()` sẵn, chỉ
   cần thêm form đăng nhập ở GUI + bật Auth provider ở Supabase.
 - **Chưa có web export** (vẫn cần export templates Godot, xem
-  `docs/online-architecture.md` §6).
+  `docs/online-architecture.md` §6). → **ĐÃ XONG 21/11/2026 21:31**: đã tải
+  export templates Godot 4.7.2 (~1.28 GB) về
+  `~/.local/share/godot/export_templates/4.7.2.stable/` (35 file), thêm
+  `export_presets.cfg` (preset "Web", `thread_support=false` = bản
+  nothreads, chạy được trên host tĩnh thường không cần header
+  COOP/COEP), export thử thành công:
+  `export/web/` 310 MB (`index.html` + `index.js` + `index.wasm`
+  39.5 MB + `index.pck` 284.7 MB gồm đủ 49 portraits/icons/audio).
+  Lệnh export: `godot --headless --path . --export-release Web
+  export/web/index.html` (lưu ý: phải `mkdir -p export/web` trước vì
+  Godot không tự tạo thư mục đích). Thư mục `export/` là build output,
+  KHÔNG push lên GitHub. Host tĩnh gợi ý: GitHub Pages / Cloudflare
+  Pages (free, không cần thẻ). Server online vẫn chạy riêng (Colyseus);
+  client web trỏ `server_url` trong `user://online_config.json`.
 - **Chưa có rate-limit** phía client; server chỉ từ chối sai phase/
   sai round (xem `docs/online-architecture.md` §9).
 - Cấu hình mặc định trỏ `http://127.0.0.1:2568` (local dev). Đổi sang
