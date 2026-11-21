@@ -229,7 +229,7 @@ func _step_skill(step: Dictionary) -> void:
 	popup.position = root.position + Vector2(0, -52)
 	add_child(popup)
 	var icon := Sprite2D.new()
-	var icon_tex: Texture2D = M1View.load_image_texture("res://ohmygame_assets/%s_skill.png" % uid)
+	var icon_tex: Texture2D = M1View.load_image_texture("res://assets/%s_skill.png" % uid)
 	if icon_tex == null:
 		icon_tex = M1View.load_portrait_texture(uid)
 	if icon_tex != null:

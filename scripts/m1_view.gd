@@ -117,11 +117,11 @@ static func timeline_stats(steps: Array) -> Dictionary:
 static func portrait_path(uid: String) -> String:
 	if uid == "vn_yet_kieu":
 		return ""
-	var p := "res://ohmygame_assets/%s_portrait.png" % uid
+	var p := "res://assets/%s_portrait.png" % uid
 	return p if FileAccess.file_exists(p) else ""
 
 # Load images / audio straight from disk (Image / raw PCM) instead of
-# load(), because staging files in ohmygame_assets/ have no editor import
+# load(), because validated assets in assets/ have no editor import
 # cache on this headless VM and load() reports "No loader found".
 static func load_image_texture(path: String) -> Texture2D:
 	if path == "" or not FileAccess.file_exists(path):
@@ -136,7 +136,7 @@ static func load_portrait_texture(uid: String) -> Texture2D:
 	return load_image_texture(portrait_path(uid))
 
 static func load_skill_wav(uid: String) -> AudioStream:
-	var path := "res://ohmygame_assets/%s_skill.wav" % uid
+	var path := "res://assets/%s_skill.wav" % uid
 	if not FileAccess.file_exists(path):
 		return null
 	var bytes := FileAccess.get_file_as_bytes(path)
@@ -160,8 +160,8 @@ static func load_skill_wav(uid: String) -> AudioStream:
 	wav.data = bytes.slice(data_pos)
 	return wav
 
-# Check which skill icons / skill sounds / portraits exist in staging.
-# Icons are still pending (0/21); skill WAVs exist for all 21.
+# Check which skill icons / skill sounds / portraits exist in assets/ (synced
+# from ohmygame_assets/ staging; see assets/MANIFEST.md).
 static func check_assets(units_data: Dictionary) -> Dictionary:
 	var missing_icons: Array = []
 	var missing_sfx: Array = []
@@ -171,11 +171,11 @@ static func check_assets(units_data: Dictionary) -> Dictionary:
 	var present_portraits := 0
 	for u in units_data.get("units", []):
 		var uid: String = u.get("unit_id", "")
-		if FileAccess.file_exists("res://ohmygame_assets/%s_skill.png" % uid):
+		if FileAccess.file_exists("res://assets/%s_skill.png" % uid):
 			present_icons += 1
 		else:
 			missing_icons.append(uid)
-		if FileAccess.file_exists("res://ohmygame_assets/%s_skill.wav" % uid):
+		if FileAccess.file_exists("res://assets/%s_skill.wav" % uid):
 			present_sfx += 1
 		else:
 			missing_sfx.append(uid)
