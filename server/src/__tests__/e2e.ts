@@ -16,14 +16,25 @@
  *  - round 2 (PvP): each client sees foreign uids from AT MOST ONE other
  *    player (its pair opponent) — never events from other pairs
  *  - every client gets an s2c_round_result for round 1
+ *  - M4 anti-cheat over the wire (client e2e-p8): 12 rapid prep actions
+ *    in round 2 → RATE_LIMITED + actions locked for the round
+ *    (ACTION_LOCKED); 3 more trips in round-2 combat → the session is
+ *    dropped (5 violations); GET /debug/telemetry shows real counts and
+ *    GET /debug/replay/:roomId re-verifies rounds 1–2 with 0 mismatches;
+ *    the JSONL telemetry log (TELEMETRY_LOG_PATH) feeds the report
+ *    script, which must print real numbers (buys ≥ 8).
  */
 import { execSync, spawn, type ChildProcess } from "child_process";
+import { rmSync } from "fs";
+import { join } from "path";
 import { Client, type Room } from "colyseus.js";
 
 const PORT = 2568;
 const BASE = `http://127.0.0.1:${PORT}`;
 const WS = `ws://127.0.0.1:${PORT}`;
 const PLAYERS = Array.from({ length: 8 }, (_, i) => `e2e-p${i + 1}`);
+const SERVER_DIR = join(__dirname, "..", "..");
+const TELEMETRY_LOG = join(SERVER_DIR, "telemetry-e2e.log");
 
 let passed = 0;
 let failed = 0;
@@ -55,17 +66,24 @@ interface ClientState {
   eventsR1: { unit_uid?: string | null; target_uid?: string | null }[];
   eventsR2: { unit_uid?: string | null; target_uid?: string | null }[];
   roundResultR1: boolean;
+  roundResultR2: boolean;
   roundId: number;
   phase: string;
+  /** s2c_error codes received (persistent collector, M4 anti-cheat). */
+  errors: { code: string }[];
+  /** True once the server dropped this session (rate-limit disconnect). */
+  disconnected: boolean;
 }
 
 async function main(): Promise<void> {
   console.log("== build ==");
-  execSync("npm run build", { cwd: __dirname + "/../..", stdio: "inherit" });
+  execSync("npm run build", { cwd: SERVER_DIR, stdio: "inherit" });
+  // Fresh telemetry log for this run (the report script reads it after).
+  rmSync(TELEMETRY_LOG, { force: true });
 
   console.log("== boot server ==");
   const server: ChildProcess = spawn("node", ["dist/index.js"], {
-    cwd: __dirname + "/../..",
+    cwd: SERVER_DIR,
     env: {
       ...process.env,
       PORT: String(PORT),
@@ -73,6 +91,7 @@ async function main(): Promise<void> {
       SUPABASE_URL: "",
       SUPABASE_ANON_KEY: "",
       SUPABASE_SERVICE_ROLE_KEY: "",
+      TELEMETRY_LOG_PATH: TELEMETRY_LOG,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -119,7 +138,7 @@ async function main(): Promise<void> {
     const states = new Map<string, ClientState>();
     const joinAll = await Promise.all(PLAYERS.map(async (pid) => {
       const room = await colyseus.joinById(roomId, { protocol_version: 1, playerId: pid });
-      const st: ClientState = { room, eventsR1: [], eventsR2: [], roundResultR1: false, roundId: 0, phase: "" };
+      const st: ClientState = { room, eventsR1: [], eventsR2: [], roundResultR1: false, roundResultR2: false, roundId: 0, phase: "", errors: [], disconnected: false };
       states.set(pid, st);
       room.onMessage("s2c_room_state", (m: { phase: string; round_id: number }) => {
         st.phase = m.phase;
@@ -131,6 +150,13 @@ async function main(): Promise<void> {
       });
       room.onMessage("s2c_round_result", (m: { round_id: number }) => {
         if (m.round_id === 1) st.roundResultR1 = true;
+        else if (m.round_id === 2) st.roundResultR2 = true;
+      });
+      room.onMessage("s2c_error", (m: { code: string }) => {
+        st.errors.push(m);
+      });
+      room.onLeave(() => {
+        st.disconnected = true;
       });
       return { pid, room };
     }));
@@ -192,6 +218,27 @@ async function main(): Promise<void> {
     }
     check("round 1 (PvE): events reference only own units or pve monsters", r1Ok, r1Detail);
 
+    console.log("== M4 anti-cheat: rate-limit + lock (round 2 prep, e2e-p8) ==");
+    {
+      const spammer = states.get("e2e-p8")!;
+      // Round 2 prep is 3 s in fast mode: wait for it, then fire 12
+      // lock toggles in one burst (PREP limit is 10/s).
+      await waitFor("round 2 prep", async () => (spammer.phase === "PREP_PHASE" && spammer.roundId === 2 ? true : null), 10_000, 100);
+      spammer.errors = [];
+      for (let i = 0; i < 12; i++) spammer.room.send("c2s_toggle_lock_shop", { round_id: 2 });
+      await sleep(400);
+      check("rate-limit: 12 rapid actions → RATE_LIMITED", spammer.errors.some((e) => e.code === "RATE_LIMITED"),
+        `errors=${JSON.stringify(spammer.errors.map((e) => e.code))}`);
+      // Next window: the client is locked for the rest of round 2 (SRS §13.2).
+      await sleep(1100);
+      spammer.errors = [];
+      spammer.room.send("c2s_toggle_lock_shop", { round_id: 2 });
+      await sleep(400);
+      check("rate-limit lock: next action in round 2 → ACTION_LOCKED", spammer.errors.some((e) => e.code === "ACTION_LOCKED"),
+        `errors=${JSON.stringify(spammer.errors.map((e) => e.code))}`);
+      // p8 already has 2 violations; 3 more trips (below) disconnect it.
+    }
+
     console.log("== combat round 2 (PvP) ==");
     await waitFor("round 2 events", async () => {
       const got = [...states.values()].filter((s) => s.eventsR2.length > 0).length;
@@ -215,8 +262,49 @@ async function main(): Promise<void> {
     check("round 2 (PvP): each client sees at most one foreign player (its pair)", r2Ok, r2Detail);
     check("round 2: at least 3 distinct pairs observed across clients", pairsSeen.size >= 3, `pairs=${pairsSeen.size}`);
 
-    for (const { room } of joinAll) {
-      try { await room.leave(); } catch { /* ignore */ }
+    console.log("== M4 anti-cheat: rate-limit disconnect (round 2 combat, e2e-p8) ==");
+    {
+      // p8 already has 2 violations from the prep spam. In COMBAT the
+      // limit is 2/s, so each burst of 3 buys trips it once; 3 bursts
+      // (1.1 s apart) reach 5 violations and the server drops the session.
+      const spammer = states.get("e2e-p8")!;
+      for (let burst = 0; burst < 3 && !spammer.disconnected; burst++) {
+        for (let i = 0; i < 3; i++) spammer.room.send("c2s_buy_shop", { round_id: 2, shop_slot: 0 });
+        await sleep(1100);
+      }
+      await waitFor("p8 disconnect", async () => (spammer.disconnected ? true : null), 5000, 200);
+      check("rate-limit: 5 violations → session dropped", spammer.disconnected, "");
+    }
+
+    console.log("== M4: round 2 results + debug endpoints ==");
+    await waitFor("round 2 results (other 7)", async () => {
+      const done = PLAYERS.filter((p) => p !== "e2e-p8").every((p) => states.get(p)!.roundResultR2);
+      return done ? true : null;
+    }, 30_000);
+    check("other 7 clients received s2c_round_result for round 2", true);
+    {
+      const tr = await fetch(`${BASE}/debug/telemetry`);
+      const tele = (await tr.json()) as { ok: boolean; report: { buys: number; rateLimited: number; rejectedActions: Record<string, number>; cheatSuspects: Record<string, number> } };
+      check("GET /debug/telemetry: buys ≥ 8 (real data)", tele.ok && tele.report.buys >= 8, JSON.stringify(tele.report));
+      check("GET /debug/telemetry: rateLimited ≥ 1", tele.report.rateLimited >= 1, `rateLimited=${tele.report.rateLimited}`);
+      const rejectedTotal = Object.values(tele.report.rejectedActions).reduce((a, b) => a + b, 0);
+      check("GET /debug/telemetry: rejected actions ≥ 1", rejectedTotal >= 1, `rejected=${rejectedTotal}`);
+      const rr = await fetch(`${BASE}/debug/replay/${roomId}`);
+      const replay = (await rr.json()) as { ok: boolean; rounds: { ok: boolean; pairKey: string }[]; mismatches: number };
+      check("GET /debug/replay: rounds 1–2 re-verified", replay.ok && replay.rounds.length >= 2, `rounds=${replay.rounds.length}`);
+      check("GET /debug/replay: 0 mismatches", replay.mismatches === 0, `mismatches=${replay.mismatches}`);
+    }
+
+    for (const { pid, room } of joinAll) {
+      // Clients the server already dropped (rate-limit disconnect) never
+      // resolve room.leave() — skip them instead of hanging the test.
+      if (states.get(pid)!.disconnected) continue;
+      try {
+        await Promise.race([
+          room.leave(),
+          new Promise((r) => setTimeout(r, 3000)),
+        ]);
+      } catch { /* ignore */ }
     }
   } finally {
     killServer();
@@ -226,6 +314,20 @@ async function main(): Promise<void> {
       await sleep(500);
     }
     if (failed > 0) console.log("--- server log (tail) ---\n" + serverLog.slice(-3000));
+  }
+
+  console.log("== M4: telemetry report script on the JSONL log ==");
+  try {
+    const out = execSync(
+      `npx ts-node --transpile-only src/scripts/telemetry-report.ts ${TELEMETRY_LOG}`,
+      { cwd: SERVER_DIR, encoding: "utf8", timeout: 60_000 },
+    );
+    check("telemetry-report runs on the e2e log", true);
+    check("telemetry-report: buys ≥ 8 in output", /buys: [8-9]\d*|buys: [1-9]\d\d+/.test(out), out.split("\n").slice(0, 3).join(" | "));
+    check("telemetry-report: rate-limited ≥ 1 in output", /rate-limited: [1-9]/.test(out), "");
+    check("telemetry-report: replay verified ≥ 1 in output", /replay verified: [1-9]/.test(out), "");
+  } catch (err) {
+    check("telemetry-report runs on the e2e log", false, err instanceof Error ? err.message : String(err));
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);

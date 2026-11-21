@@ -39,10 +39,33 @@ import type { CombatEvent, S2CMessage } from "../protocol";
 import { PROTOCOL_VERSION } from "../protocol";
 import { createSupabaseClients, recordMatchResult, type SupabaseClients } from "../supabase";
 import { guestIdentity, verifyPlayerToken, type PlayerIdentity } from "../auth";
-import { trackEvent } from "../telemetry";
+import { getMatchEvents, trackEvent } from "../telemetry";
+import { activeBonds } from "../bonds";
+import {
+  PlayerAntiCheat,
+  RATE_LIMIT_MAX_VIOLATIONS,
+  RATE_LIMIT_OTHER_PER_SEC,
+  RATE_LIMIT_PREP_PER_SEC,
+} from "../rateLimit";
+import {
+  validateActionId,
+  validateRoundId,
+  validateSellTarget,
+  validateShopSlot,
+  validateZoneIndex,
+} from "../validate";
+import {
+  liveResultOf,
+  verifyRoundReplay,
+  type LiveRoundResult,
+  type RoundReplayInput,
+} from "../replay";
+import { getMatchReplays, recordRoundReplay } from "../replayStore";
 import { BattleRoomState, PlayerState } from "./BattleRoomState";
 import {
-  buyShopSlot,
+  boardCount,
+  boardUnits,
+  buyShopSlotDetailed,
   buyXp,
   computeIncome,
   gainRoundXp,
@@ -58,6 +81,7 @@ import {
   type SharedPool,
   type Zone,
 } from "../economy";
+import { unitById } from "../data";
 import { takePrepTurn } from "../bot";
 import { rivalryPair as rivalryPairBoards } from "../bonds";
 import {
@@ -141,6 +165,13 @@ export class BattleRoom extends Room<BattleRoomState> {
   private pairOfPlayer = new Map<string, string>();
   private pairOutcomes = new Map<string, PairOutcome>();
 
+  /** M4 anti-cheat: per-player rate limiter + action lock + seen action ids. */
+  private antiCheat = new Map<string, PlayerAntiCheat>();
+  /** M4 replay verification: inputs recorded when combat is built. */
+  private replayInputs: RoundReplayInput[] = [];
+  /** M4 telemetry: karma_trigger bond ids fired this round (counted). */
+  private roundBondTriggers = new Map<string, number>();
+
   onCreate(options: RoomOptions): void {
     this.mode = options.mode ?? "CASUAL";
     this.seats = options.seats ?? [];
@@ -184,9 +215,11 @@ export class BattleRoom extends Room<BattleRoomState> {
     this.onMessage("c2s_equip_item", (client, msg) => this.handlePrepAction(client, msg, "equip"));
 
     // Reconnect: same session token → same seat, state re-sent (SRS §10.3).
+    // M4: reconnects are rate-limited like any other client message.
     this.onMessage("c2s_reconnect", (client, msg) => {
       void msg;
       const pid = this.playerIdOf(client);
+      if (!this.checkRateLimit(client, pid, false)) return;
       const player = this.state.players.get(pid);
       if (!player) return this.sendError(client, "NOT_IN_ROOM", "session is not part of this room");
       player.connected = true;
@@ -332,6 +365,10 @@ export class BattleRoom extends Room<BattleRoomState> {
     this.activePairs.clear();
     this.pairOfPlayer.clear();
     this.pairOutcomes.clear();
+    // M4: fresh anti-cheat round state (action-id dedupe) and replay inputs.
+    for (const ac of this.antiCheat.values()) ac.beginRound();
+    this.replayInputs = [];
+    this.roundBondTriggers.clear();
     // PREP: free refresh (unless locked) for every alive player, then bots
     // take their prep turn immediately (M1 order: roll shop, then bot prep).
     for (const eco of this.economies.values()) {
@@ -391,42 +428,75 @@ export class BattleRoom extends Room<BattleRoomState> {
       for (const [ecoA, ecoB] of pairs) {
         ecoA.lastOpponent = ecoB.playerId;
         ecoB.lastOpponent = ecoA.playerId;
-        const a = buildSideCombatants(boardSlots(ecoA), 0, ecoA.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
-        this.iidCounter = a.nextIid;
-        const b = buildSideCombatants(boardSlots(ecoB), 1, ecoB.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
+        const slotsA = boardSlots(ecoA);
+        const slotsB = boardSlots(ecoB);
+        const iidStartA = this.iidCounter;
+        const a = buildSideCombatants(slotsA, 0, ecoA.playerId, data.units, this.cfg, iidStartA, data.bonds);
+        const iidStartB = a.nextIid;
+        const b = buildSideCombatants(slotsB, 1, ecoB.playerId, data.units, this.cfg, iidStartB, data.bonds);
         this.iidCounter = b.nextIid;
-        const combat = new PairCombat(a.combatants, b.combatants, this.roundSeed + pairIndex * 7919, this.cfg);
+        const pairSeed = this.roundSeed + pairIndex * 7919;
+        const combat = new PairCombat(a.combatants, b.combatants, pairSeed, this.cfg);
         const key = `pvp:${ecoA.playerId}|${ecoB.playerId}`;
         this.pairings.push({ a: ecoA.playerId, b: ecoB.playerId, ghost: false });
         addPair(key, "PVP", combat, [ecoA.playerId, ecoB.playerId]);
+        // M4 replay input: boards + seed + iid starts reproduce this combat.
+        this.replayInputs.push({
+          matchId: this.roomId, roundId: this.state.roundId, pairKey: key, kind: "PVP",
+          seed: pairSeed, stage: this.state.stage, ris: this.state.roundInStage,
+          sideA: { ownerId: ecoA.playerId, slots: slotsA, iidStart: iidStartA },
+          sideB: { ownerId: ecoB.playerId, slots: slotsB, iidStart: iidStartB },
+        });
         pairIndex += 1;
       }
       if (ghost) {
-        const gp = buildSideCombatants(boardSlots(ghost), 0, ghost.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
-        this.iidCounter = gp.nextIid;
+        const ghostSlots = boardSlots(ghost);
+        const iidStartG = this.iidCounter;
+        const gp = buildSideCombatants(ghostSlots, 0, ghost.playerId, data.units, this.cfg, iidStartG, data.bonds);
+        const iidStartH = gp.nextIid;
         let gh: { combatants: ReturnType<typeof buildSideCombatants>["combatants"]; nextIid: number };
         if (this.ghostBoard.length > 0) {
-          gh = buildGhostCombatants(this.ghostBoard, this.ghostOwnerId, data.units, this.cfg, this.iidCounter);
+          gh = buildGhostCombatants(this.ghostBoard, this.ghostOwnerId, data.units, this.cfg, iidStartH);
         } else {
           // No one eliminated yet: ghost falls back to PvE monsters (M1).
-          gh = buildPveCombatants(this.state.stage, this.state.roundInStage, data.pve, this.cfg, this.iidCounter);
+          gh = buildPveCombatants(this.state.stage, this.state.roundInStage, data.pve, this.cfg, iidStartH);
         }
         this.iidCounter = gh.nextIid;
-        const combat = new PairCombat(gp.combatants, gh.combatants, this.roundSeed + 555, this.cfg);
+        const ghostSeed = this.roundSeed + 555;
+        const combat = new PairCombat(gp.combatants, gh.combatants, ghostSeed, this.cfg);
         const key = `ghost:${ghost.playerId}`;
         this.pairings.push({ a: ghost.playerId, b: this.ghostOwnerId, ghost: true });
         addPair(key, "GHOST", combat, [ghost.playerId]);
+        this.replayInputs.push({
+          matchId: this.roomId, roundId: this.state.roundId, pairKey: key, kind: "GHOST",
+          seed: ghostSeed, stage: this.state.stage, ris: this.state.roundInStage,
+          sideA: { ownerId: ghost.playerId, slots: ghostSlots, iidStart: iidStartG },
+          sideB: this.ghostBoard.length > 0
+            ? { ownerId: this.ghostOwnerId, slots: [...this.ghostBoard], iidStart: iidStartH }
+            : { pve: true, iidStart: iidStartH },
+          ghostOwnerId: this.ghostOwnerId,
+        });
       }
     } else {
       // PvE / boss: every alive player fights monsters (no pairing).
       let playerIndex = 0;
       for (const eco of alive) {
-        const a = buildSideCombatants(boardSlots(eco), 0, eco.playerId, data.units, this.cfg, this.iidCounter, data.bonds);
-        this.iidCounter = a.nextIid;
-        const m = buildPveCombatants(this.state.stage, this.state.roundInStage, data.pve, this.cfg, this.iidCounter);
+        const slots = boardSlots(eco);
+        const iidStartA = this.iidCounter;
+        const a = buildSideCombatants(slots, 0, eco.playerId, data.units, this.cfg, iidStartA, data.bonds);
+        const iidStartB = a.nextIid;
+        const m = buildPveCombatants(this.state.stage, this.state.roundInStage, data.pve, this.cfg, iidStartB);
         this.iidCounter = m.nextIid;
-        const combat = new PairCombat(a.combatants, m.combatants, this.roundSeed + playerIndex * 131, this.cfg);
-        addPair(`pve:${eco.playerId}`, "PVE", combat, [eco.playerId]);
+        const pveSeed = this.roundSeed + playerIndex * 131;
+        const combat = new PairCombat(a.combatants, m.combatants, pveSeed, this.cfg);
+        const key = `pve:${eco.playerId}`;
+        addPair(key, "PVE", combat, [eco.playerId]);
+        this.replayInputs.push({
+          matchId: this.roomId, roundId: this.state.roundId, pairKey: key, kind: "PVE",
+          seed: pveSeed, stage: this.state.stage, ris: this.state.roundInStage,
+          sideA: { ownerId: eco.playerId, slots, iidStart: iidStartA },
+          sideB: { pve: true, iidStart: iidStartB },
+        });
         playerIndex += 1;
       }
     }
@@ -478,6 +548,12 @@ export class BattleRoom extends Room<BattleRoomState> {
         const wire = simEvents.map((e) => this.translateEvent(e, pair.uidByIid));
         this.roundEvents.push(...wire);
         this.eventLog.push({ at: Date.now(), roundId: this.state.roundId, tick: this.tickCount, pairKey: pair.key, events: wire });
+        // M4 telemetry: count karma_trigger bonds fired this round.
+        for (const e of wire) {
+          if (e.type === "karma_trigger" && e.skill_id) {
+            this.roundBondTriggers.set(e.skill_id, (this.roundBondTriggers.get(e.skill_id) ?? 0) + 1);
+          }
+        }
         this.sendToPair(pair, wire);
       }
     }
@@ -574,6 +650,44 @@ export class BattleRoom extends Room<BattleRoomState> {
       }
     }
 
+    // M4 replay verification: record every pair's live result now (the
+    // combats are final), then verify asynchronously so the 20 Hz loop
+    // and the next prep phase are never blocked by re-simulation.
+    const records: { input: RoundReplayInput; live: LiveRoundResult }[] = [];
+    for (const input of this.replayInputs) {
+      const pair = this.activePairs.get(input.pairKey);
+      if (!pair) continue;
+      const live = liveResultOf(pair.combat);
+      recordRoundReplay(input, live);
+      records.push({ input, live });
+    }
+    setImmediate(() => {
+      if (!this.gameData) return;
+      for (const { input } of records) {
+        const stored = getMatchReplays(this.roomId).find(
+          (r) => r.pairKey === input.pairKey && r.roundId === input.roundId,
+        );
+        if (!stored) continue;
+        const v = verifyRoundReplay(stored, this.gameData, this.cfg);
+        if (v.ok) {
+          trackEvent(this.supabase.service, {
+            name: "replay_verified", playerId: "room", matchId: this.roomId, roundId: input.roundId,
+            payload: { pair: input.pairKey, hash: v.liveHash.slice(0, 12) },
+          });
+        } else {
+          console.error(`[room ${this.roomId}] REPLAY MISMATCH round ${input.roundId} ${input.pairKey}: ${v.mismatch}`);
+          trackEvent(this.supabase.service, {
+            name: "replay_mismatch", playerId: "room", matchId: this.roomId, roundId: input.roundId,
+            payload: { pair: input.pairKey, reason: v.mismatch },
+          });
+          trackEvent(this.supabase.service, {
+            name: "cheat_suspect", playerId: "room", matchId: this.roomId, roundId: input.roundId,
+            payload: { reason: "replay_mismatch", pair: input.pairKey, detail: v.mismatch },
+          });
+        }
+      }
+    });
+
     const perPlayerResult = new Map<string, { won: boolean; damage: number; income: number }>();
     for (const eco of this.economies.values()) {
       if (!eco.alive) continue;
@@ -621,7 +735,30 @@ export class BattleRoom extends Room<BattleRoomState> {
         type: "s2c_round_result", protocol_version: PROTOCOL_VERSION, round_id: this.state.roundId,
         result: r.won ? "win" : "loss", damage_taken: r.damage, gold_earned: r.income, eliminated: eliminatedNow,
       } satisfies S2CMessage);
+      // M4 telemetry: per-player round result + end-of-round lineup
+      // (SRS §11.4) — feeds win-rate-by-nation/class/bond aggregation.
+      const eco = this.economies.get(pid);
+      const lineup = eco ? this.lineupSummary(eco) : { units: [] as string[], nations: [] as string[], classes: [] as string[], bonds: [] as string[] };
+      trackEvent(this.supabase.service, {
+        name: "round_result", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+        payload: {
+          result: r.won ? "win" : "loss", damage_taken: r.damage, gold_earned: r.income,
+          nations: lineup.nations, classes: lineup.classes, bonds: lineup.bonds,
+        },
+      });
+      trackEvent(this.supabase.service, {
+        name: "round_lineup", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+        payload: { units: lineup.units, nations: lineup.nations, classes: lineup.classes, bonds: lineup.bonds },
+      });
     }
+    // M4 telemetry: bond triggers fired this round (counted, one event per bond).
+    for (const [bondId, count] of this.roundBondTriggers) {
+      trackEvent(this.supabase.service, {
+        name: "bond_trigger", playerId: "room", matchId: this.roomId, roundId: this.state.roundId,
+        payload: { bond_id: bondId, count },
+      });
+    }
+    this.roundBondTriggers.clear();
     trackEvent(this.supabase.service, {
       name: "round_result", playerId: "room", matchId: this.roomId, roundId: this.state.roundId,
       payload: { eliminated: eliminatedNow },
@@ -659,6 +796,14 @@ export class BattleRoom extends Room<BattleRoomState> {
       type: "s2c_game_over", protocol_version: PROTOCOL_VERSION,
       standings: standings.map((s) => ({ player_id: s.playerId, placement: s.placement, mmr_delta: s.mmrDelta })),
     } satisfies S2CMessage);
+    // M4 telemetry: match summary (standings) for meta aggregation.
+    trackEvent(this.supabase.service, {
+      name: "match_summary", playerId: "room", matchId: this.roomId,
+      payload: {
+        mode: this.mode, rounds: this.state.roundId,
+        standings: standings.map((s) => ({ player_id: s.playerId, placement: s.placement })),
+      },
+    });
     // Persist (best-effort; never blocks the room). Bots are recorded as
     // match_players with is_bot=true and are flagged in history (§11.1).
     await recordMatchResult(this.supabase, {
@@ -673,61 +818,116 @@ export class BattleRoom extends Room<BattleRoomState> {
   // ------------------------------------------------------------------ actions
 
   /**
-   * Prep-phase actions (SRS §9.1/§10.3). Every action validates first and
-   * mutates only on success, using the M1 economy rules (src/economy.ts —
-   * same prices, XP table, pool sizes, board cap = level as Godot).
-   * Rejected actions change nothing and get an s2c_error.
+   * Prep-phase actions (SRS §9.1/§10.3 + §13.2). Every action validates
+   * first and mutates only on success, using the M1 economy rules
+   * (src/economy.ts — same prices, XP table, pool sizes, board cap =
+   * level as Godot). Rejected actions change nothing, get an s2c_error,
+   * and are logged as `action_rejected` + `cheat_suspect` telemetry with
+   * the exact reason (M4). A wrong action is never applied partially.
+   *
+   * Validation order: rate limit → action lock → phase → round_id →
+   * action_id dedupe → seat/alive → per-action shape + economy rules.
    */
   private handlePrepAction(client: Client, msg: Record<string, unknown>, kind: string): void {
-    if (this.state.phase !== "PREP_PHASE") {
-      return this.sendError(client, "WRONG_PHASE", `action ${kind} is only allowed in PREP_PHASE`);
-    }
-    if (typeof msg.round_id === "number" && msg.round_id !== this.state.roundId) {
-      return this.sendError(client, "STALE_ROUND", `round_id ${msg.round_id} does not match current round ${this.state.roundId}`);
-    }
     const pid = this.playerIdOf(client);
+    // M4 rate limit (10/s in PREP, 2/s otherwise); trips lock actions
+    // until end of round and count toward disconnect (SRS §13.2).
+    if (!this.checkRateLimit(client, pid, true)) return;
+    const ac = this.antiCheatFor(pid);
+    if (ac.isLockedForRound(this.state.roundId)) {
+      return this.rejectAction(client, pid, kind, "ACTION_LOCKED",
+        `prep actions locked for round ${this.state.roundId} after rate-limit`, "rate_limit_lock");
+    }
+    if (this.state.phase !== "PREP_PHASE") {
+      return this.rejectAction(client, pid, kind, "WRONG_PHASE",
+        `action ${kind} is only allowed in PREP_PHASE`, "wrong_phase");
+    }
+    const roundErr = validateRoundId(msg.round_id, this.state.roundId);
+    if (roundErr) {
+      return this.rejectAction(client, pid, kind, roundErr.code, roundErr.reason, "stale_round");
+    }
+    const actionErr = validateActionId(msg.action_id, ac.seenActionIds);
+    if (actionErr) {
+      return this.rejectAction(client, pid, kind, actionErr.code, actionErr.reason, "duplicate_action");
+    }
+    if (typeof msg.action_id === "string") ac.seenActionIds.add(msg.action_id);
     const eco = this.economies.get(pid);
     if (!eco || !eco.alive) {
-      return this.sendError(client, "NOT_IN_ROOM", "no live seat for this player in the room");
+      return this.rejectAction(client, pid, kind, "NOT_IN_ROOM",
+        "no live seat for this player in the room", "not_in_room");
     }
     if (!this.gameData) {
-      return this.sendError(client, "NO_GAME_DATA", "game data failed to load");
+      return this.rejectAction(client, pid, kind, "NO_GAME_DATA", "game data failed to load", "no_game_data");
     }
     const units = this.gameData.units;
     let ok = false;
     let telemetryName: "buy" | "sell" | "reroll" | "buy_xp" | null = null;
+    let boughtUnitId: string | undefined;
+    let soldUnit: { unit_id: string; star: number; price: number } | undefined;
     switch (kind) {
       case "move": {
-        const from = asZoneIndex(msg.from);
-        const to = asZoneIndex(msg.to);
-        if (!from || !to) return this.sendError(client, "BAD_MOVE", "from/to must be {zone: BENCH|BOARD, index: number}");
+        const from = validateZoneIndex(msg.from);
+        if ("code" in from) {
+          return this.rejectAction(client, pid, kind, from.code, from.reason, "bad_move");
+        }
+        const to = validateZoneIndex(msg.to);
+        if ("code" in to) {
+          return this.rejectAction(client, pid, kind, to.code, to.reason, "bad_move");
+        }
         ok = moveUnit(eco, from, to);
-        if (!ok) return this.sendError(client, "INVALID_MOVE", "cannot move that unit there (board cap = level, cell occupied, or bench full)");
+        if (!ok) {
+          return this.rejectAction(client, pid, kind, "INVALID_MOVE",
+            "cannot move that unit there (board cap = level, cell occupied, or bench full)", "invalid_move");
+        }
         break;
       }
       case "buy": {
-        const slot = msg.shop_slot;
-        if (typeof slot !== "number") return this.sendError(client, "BAD_BUY", "shop_slot must be a number");
-        ok = buyShopSlot(eco, units, this.pool, slot, this.cfg);
-        if (!ok) return this.sendError(client, "BUY_FAILED", "cannot buy that shop slot (empty slot, not enough gold, bench full, or pool empty)");
+        const slotErr = validateShopSlot(msg.shop_slot);
+        if (slotErr) {
+          return this.rejectAction(client, pid, kind, slotErr.code, slotErr.reason, "bad_shop_slot");
+        }
+        const res = buyShopSlotDetailed(eco, units, this.pool, msg.shop_slot as number, this.cfg);
+        if (!res.ok) {
+          const detail: Record<string, string> = {
+            bad_slot: "shop slot out of range",
+            empty_slot: "shop slot is empty",
+            no_unit: "shop unit not found in game data",
+            insufficient_gold: "not enough gold for that unit",
+            pool_empty: "unit pool is empty",
+            bench_full: "bench is full (9)",
+          };
+          return this.rejectAction(client, pid, kind, "BUY_FAILED",
+            detail[res.reason ?? "empty_slot"], `buy_failed:${res.reason ?? "empty_slot"}`);
+        }
+        ok = true;
         telemetryName = "buy";
+        boughtUnitId = res.unitId;
         break;
       }
       case "sell": {
-        const zone = msg.zone;
-        const index = msg.index;
-        if ((zone !== "BENCH" && zone !== "BOARD") || typeof index !== "number") {
-          return this.sendError(client, "BAD_SELL", "zone must be BENCH|BOARD and index a number");
+        const sellErr = validateSellTarget(msg.zone, msg.index);
+        if (sellErr) {
+          return this.rejectAction(client, pid, kind, sellErr.code, sellErr.reason, "bad_sell");
         }
-        const res = sellUnit(eco, this.pool, units, zone as Zone, index);
-        if (!res.ok) return this.sendError(client, "SELL_FAILED", "no unit at that bench/board slot");
+        const zone = msg.zone as Zone;
+        const index = msg.index as number;
+        const target = zone === "BENCH" ? eco.bench[index] : eco.board[index];
+        const res = sellUnit(eco, this.pool, units, zone, index);
+        if (!res.ok || !target) {
+          return this.rejectAction(client, pid, kind, "SELL_FAILED",
+            "no unit at that bench/board slot", "sell_failed");
+        }
         ok = true;
         telemetryName = "sell";
+        soldUnit = { unit_id: target.unit_id, star: target.star, price: res.price };
         break;
       }
       case "reroll": {
         ok = rollShop(eco, units, this.pool, this.rng, this.cfg, false);
-        if (!ok) return this.sendError(client, "REROLL_FAILED", "not enough gold to reroll (2 gold)");
+        if (!ok) {
+          return this.rejectAction(client, pid, kind, "REROLL_FAILED",
+            "not enough gold to reroll (2 gold)", "reroll_failed:insufficient_gold");
+        }
         telemetryName = "reroll";
         break;
       }
@@ -737,25 +937,146 @@ export class BattleRoom extends Room<BattleRoomState> {
         break;
       }
       case "xp": {
+        if (eco.level >= this.cfg.level_cap) {
+          return this.rejectAction(client, pid, kind, "XP_FAILED",
+            "level cap 9 reached", "xp_failed:level_cap");
+        }
         ok = buyXp(eco, this.cfg);
-        if (!ok) return this.sendError(client, "XP_FAILED", "cannot buy XP (not enough gold or level cap 9 reached)");
+        if (!ok) {
+          return this.rejectAction(client, pid, kind, "XP_FAILED",
+            "cannot buy XP (not enough gold)", "xp_failed:insufficient_gold");
+        }
         telemetryName = "buy_xp";
         break;
       }
       case "equip": {
         // M1 has no items (SRS §8 lands in M2 only as data); reject honestly.
-        return this.sendError(client, "NOT_SUPPORTED", "items are not in the M1 scope");
+        return this.rejectAction(client, pid, kind, "NOT_SUPPORTED",
+          "items are not in the M1 scope", "items_not_supported");
       }
       default:
-        return this.sendError(client, "UNKNOWN_ACTION", `unknown prep action ${kind}`);
+        return this.rejectAction(client, pid, kind, "UNKNOWN_ACTION",
+          `unknown prep action ${kind}`, "unknown_action");
     }
     if (!ok) return; // unreachable: every branch returns on failure
+    // M4 defense-in-depth: the economy must never go negative or over
+    // the board cap, whatever the client sent. A violation here is a
+    // server bug or tampering — log it loudly, do not crash the room.
+    this.checkEconomyInvariant(pid, eco, kind);
     this.syncPlayerState(pid);
     this.sendRoomState(client);
     this.sendBoardSnapshot(client);
-    if (telemetryName) {
+    if (telemetryName === "buy" && boughtUnitId) {
+      const def = unitById(units, boughtUnitId);
+      trackEvent(this.supabase.service, {
+        name: "buy", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+        payload: { unit_id: boughtUnitId, nation_id: def?.nation_id, class_id: def?.class_id, cost: def?.cost },
+      });
+    } else if (telemetryName === "sell" && soldUnit) {
+      const def = unitById(units, soldUnit.unit_id);
+      trackEvent(this.supabase.service, {
+        name: "sell", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+        payload: { unit_id: soldUnit.unit_id, star: soldUnit.star, price: soldUnit.price, nation_id: def?.nation_id, class_id: def?.class_id },
+      });
+    } else if (telemetryName) {
       trackEvent(this.supabase.service, { name: telemetryName, playerId: pid, matchId: this.roomId, roundId: this.state.roundId });
     }
+  }
+
+  // ------------------------------------------------------- M4 anti-cheat
+
+  private antiCheatFor(pid: string): PlayerAntiCheat {
+    let ac = this.antiCheat.get(pid);
+    if (!ac) {
+      ac = new PlayerAntiCheat();
+      this.antiCheat.set(pid, ac);
+    }
+    return ac;
+  }
+
+  /**
+   * Rate-limit gate (SRS §13.2). PREP allows 10 actions/s, every other
+   * phase 2/s. A trip locks the player's prep actions until the end of
+   * the current round; 5 trips in one match drops the session.
+   * Returns false when the message must be dropped.
+   */
+  private checkRateLimit(client: Client, pid: string, isPrepAction: boolean): boolean {
+    if (!pid) return true; // unauthenticated: nothing to limit yet
+    const ac = this.antiCheatFor(pid);
+    const limit = this.state.phase === "PREP_PHASE" ? RATE_LIMIT_PREP_PER_SEC : RATE_LIMIT_OTHER_PER_SEC;
+    if (ac.limiter.allow(Date.now(), limit)) return true;
+    const mustDrop = ac.recordViolation();
+    if (isPrepAction) ac.lockForRound(this.state.roundId);
+    this.sendError(client, "RATE_LIMITED",
+      `too many actions (${limit}/s in ${this.state.phase}); prep actions locked until end of round ${this.state.roundId}`);
+    trackEvent(this.supabase.service, {
+      name: "rate_limited", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+      payload: { limit_per_sec: limit, phase: this.state.phase, violations: ac.violations },
+    });
+    if (mustDrop) {
+      console.warn(`[room ${this.roomId}] dropping ${pid}: ${RATE_LIMIT_MAX_VIOLATIONS} rate-limit violations`);
+      trackEvent(this.supabase.service, {
+        name: "rate_limit_disconnect", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+        payload: { violations: ac.violations },
+      });
+      trackEvent(this.supabase.service, {
+        name: "cheat_suspect", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+        payload: { reason: "rate_limit_exceeded", violations: ac.violations },
+      });
+      client.leave();
+    }
+    return false;
+  }
+
+  /**
+   * Reject one action: s2c_error to the client + audit telemetry.
+   * `cheat_suspect` is an AUDIT event, not an automatic ban — its
+   * reason separates benign failures (insufficient_gold, empty_slot)
+   * from abuse patterns (duplicate_action, stale_round, rate-limit).
+   */
+  private rejectAction(
+    client: Client, pid: string, kind: string,
+    code: string, reason: string, suspectReason: string,
+  ): void {
+    this.sendError(client, code, reason);
+    trackEvent(this.supabase.service, {
+      name: "action_rejected", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+      payload: { action: kind, code, reason },
+    });
+    trackEvent(this.supabase.service, {
+      name: "cheat_suspect", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+      payload: { reason: suspectReason, action: kind, detail: reason },
+    });
+  }
+
+  /** Post-action invariant: gold, bench and board must stay legal. */
+  private checkEconomyInvariant(pid: string, eco: PlayerEconomy, action: string): void {
+    const problems: string[] = [];
+    if (eco.gold < 0) problems.push(`negative gold ${eco.gold}`);
+    if (eco.bench.length > 9) problems.push(`bench overflow ${eco.bench.length}`);
+    if (boardCount(eco) > eco.level) problems.push(`board ${boardCount(eco)} > level ${eco.level}`);
+    if (eco.level < 1 || eco.level > this.cfg.level_cap) problems.push(`level ${eco.level} out of range`);
+    if (problems.length === 0) return;
+    console.error(`[room ${this.roomId}] INVARIANT VIOLATION ${pid} after ${action}: ${problems.join("; ")}`);
+    trackEvent(this.supabase.service, {
+      name: "cheat_suspect", playerId: pid, matchId: this.roomId, roundId: this.state.roundId,
+      payload: { reason: "invariant_violation", action, detail: problems.join("; ") },
+    });
+  }
+
+  /** End-of-round lineup summary for telemetry (SRS §11.4). */
+  private lineupSummary(eco: PlayerEconomy): { units: string[]; nations: string[]; classes: string[]; bonds: string[] } {
+    if (!this.gameData) return { units: [], nations: [], classes: [], bonds: [] };
+    const units = boardUnits(eco).map((u) => u.unit_id);
+    const defs = units
+      .map((uid) => unitById(this.gameData!.units, uid))
+      .filter((d): d is NonNullable<typeof d> => d !== undefined);
+    return {
+      units,
+      nations: [...new Set(defs.map((d) => d.nation_id))],
+      classes: [...new Set(defs.map((d) => d.class_id))],
+      bonds: activeBonds(units, this.gameData.bonds).map((b) => b.bond_id),
+    };
   }
 
   // ------------------------------------------------------------------ helpers
@@ -845,11 +1166,4 @@ export class BattleRoom extends Room<BattleRoomState> {
     if (this.combatInterval) { clearInterval(this.combatInterval); this.combatInterval = null; }
     if (this.startTimer) { clearTimeout(this.startTimer); this.startTimer = null; }
   }
-}
-
-function asZoneIndex(v: unknown): { zone: Zone; index: number } | null {
-  if (typeof v !== "object" || v === null) return null;
-  const o = v as Record<string, unknown>;
-  if ((o.zone !== "BENCH" && o.zone !== "BOARD") || typeof o.index !== "number") return null;
-  return { zone: o.zone as Zone, index: o.index };
 }

@@ -113,6 +113,42 @@ export function rollShop(
   return true;
 }
 
+export type BuyFailureReason =
+  | "bad_slot"
+  | "empty_slot"
+  | "no_unit"
+  | "insufficient_gold"
+  | "pool_empty"
+  | "bench_full";
+
+/**
+ * Buy with a machine-readable failure reason (M4 anti-cheat: the room
+ * logs the exact reason an action was rejected instead of a generic
+ * "BUY_FAILED"). buyShopSlot below is the boolean wrapper.
+ */
+export function buyShopSlotDetailed(
+  p: PlayerEconomy,
+  units: UnitDef[],
+  pool: SharedPool,
+  slot: number,
+  cfg: BalanceConfig,
+): { ok: boolean; reason?: BuyFailureReason; unitId?: string } {
+  if (slot < 0 || slot >= p.shop.length) return { ok: false, reason: "bad_slot" };
+  const uid = p.shop[slot];
+  if (uid === "") return { ok: false, reason: "empty_slot" };
+  const def = unitById(units, uid);
+  if (!def) return { ok: false, reason: "no_unit" };
+  if (p.gold < def.cost) return { ok: false, reason: "insufficient_gold" };
+  if ((pool[uid] ?? 0) <= 0) return { ok: false, reason: "pool_empty" };
+  if (p.bench.length >= 9) return { ok: false, reason: "bench_full" };
+  p.gold -= def.cost;
+  pool[uid] = (pool[uid] ?? 0) - 1;
+  p.shop[slot] = "";
+  p.bench.push({ unit_id: uid, star: 1 });
+  tryStarUp(p);
+  return { ok: true, unitId: uid };
+}
+
 export function buyShopSlot(
   p: PlayerEconomy,
   units: UnitDef[],
@@ -120,20 +156,7 @@ export function buyShopSlot(
   slot: number,
   cfg: BalanceConfig,
 ): boolean {
-  if (slot < 0 || slot >= p.shop.length) return false;
-  const uid = p.shop[slot];
-  if (uid === "") return false;
-  const def = unitById(units, uid);
-  if (!def) return false;
-  if (p.gold < def.cost) return false;
-  if ((pool[uid] ?? 0) <= 0) return false;
-  if (p.bench.length >= 9) return false;
-  p.gold -= def.cost;
-  pool[uid] = (pool[uid] ?? 0) - 1;
-  p.shop[slot] = "";
-  p.bench.push({ unit_id: uid, star: 1 });
-  tryStarUp(p);
-  return true;
+  return buyShopSlotDetailed(p, units, pool, slot, cfg).ok;
 }
 
 export function buyXp(p: PlayerEconomy, cfg: BalanceConfig): boolean {

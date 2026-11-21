@@ -22,19 +22,46 @@
  * Join flow: POST /queue → poll GET /queue/:playerId → joinById(roomId) with
  * options {token} (Supabase JWT) or {playerId: "guest:<deviceId>"} — the
  * token is verified in BattleRoom.onAuth, never trusted from the client.
+ *
+ * Debug endpoints (M4 anti-cheat; see docs/online-architecture.md §9):
+ *  - GET  /debug/replay/:matchId  → re-verify every recorded round of a
+ *    match from its stored replay inputs (SRS §13.2 "replay công khai sau
+ *    trận"). {ok, rounds:[{pairKey, ok, liveHash, replayHash, ...}], mismatches}
+ *  - GET  /debug/telemetry        → aggregate meta report across stored matches
+ *  - GET  /debug/telemetry/:matchId → aggregate meta report for one match
+ *  When ADMIN_TOKEN is set, these require `x-admin-token` header or
+ *  `?token=`; when unset (local dev) they are open.
  */
 import "dotenv/config";
 import { createServer, type IncomingMessage, type ServerResponse } from "http";
 import { Server } from "colyseus";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import { loadBalanceConfig, loadEnv } from "./config";
+import { loadGameData, type GameData } from "./data";
 import { createSupabaseClients } from "./supabase";
+import { getGlobalReport, getMatchReport, getStoredMatchIds, setTelemetryLogPath } from "./telemetry";
+import { hasMatchReplays, verifyMatchReplays } from "./replayStore";
 import { BattleRoom } from "./rooms/BattleRoom";
 import { MatchWorker } from "./matchWorker";
 
 const env = loadEnv();
 const cfg = loadBalanceConfig();
 const supabase = createSupabaseClients(env);
+setTelemetryLogPath(env.telemetryLogPath || null);
+if (env.telemetryLogPath) console.log(`[server] telemetry JSONL log: ${env.telemetryLogPath}`);
+if (!env.adminToken) {
+  console.warn("[server] ADMIN_TOKEN is not set — /debug/* endpoints are open (local dev only)");
+}
+
+// Game data is loaded once for the /debug/replay endpoint (re-verification
+// rebuilds combats from stored inputs). A missing data dir only disables
+// that endpoint; rooms load their own copy in BattleRoom.onCreate.
+let gameData: GameData | null = null;
+try {
+  gameData = loadGameData();
+} catch (err) {
+  console.warn("[server] game data not loaded at startup — /debug/replay will answer 503:", err instanceof Error ? err.message : String(err));
+}
 
 if (!supabase.enabled) {
   console.warn("[server] starting WITHOUT Supabase persistence — see server/.env.example");
@@ -124,6 +151,32 @@ const httpServer = createServer((req, res) => {
     const playerId = decodeURIComponent(url.pathname.slice("/queue/".length));
     matchWorker.leave(playerId);
     return sendJson(res, 200, { ok: true, status: "left" });
+  }
+  // ---- M4 debug endpoints (replay verification + telemetry reports) ----
+  const checkAdmin = (): boolean => {
+    if (!env.adminToken) return true; // local dev: open, see warning above
+    const header = req.headers["x-admin-token"];
+    const query = url.searchParams.get("token");
+    if (header === env.adminToken || query === env.adminToken) return true;
+    sendJson(res, 403, { ok: false, error: "admin token required" });
+    return false;
+  };
+  if (req.method === "GET" && url.pathname.startsWith("/debug/replay/")) {
+    if (!checkAdmin()) return;
+    const matchId = decodeURIComponent(url.pathname.slice("/debug/replay/".length));
+    if (!hasMatchReplays(matchId)) return sendJson(res, 404, { ok: false, error: "no replay records for match" });
+    if (!gameData) return sendJson(res, 503, { ok: false, error: "game data not loaded" });
+    return sendJson(res, 200, { ok: true, ...verifyMatchReplays(matchId, gameData, cfg) });
+  }
+  if (req.method === "GET" && url.pathname === "/debug/telemetry") {
+    if (!checkAdmin()) return;
+    return sendJson(res, 200, { ok: true, matches: getStoredMatchIds(), report: getGlobalReport() });
+  }
+  if (req.method === "GET" && url.pathname.startsWith("/debug/telemetry/")) {
+    if (!checkAdmin()) return;
+    const matchId = decodeURIComponent(url.pathname.slice("/debug/telemetry/".length));
+    if (!getStoredMatchIds().includes(matchId)) return sendJson(res, 404, { ok: false, error: "no telemetry for match" });
+    return sendJson(res, 200, { ok: true, report: getMatchReport(matchId) });
   }
   sendJson(res, 404, { ok: false, error: "not_found" });
 });

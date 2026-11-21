@@ -1,280 +1,280 @@
 {
-  "bonds": [
+ "bonds": [
+  {
+   "bond_id": "bond_cach_mang",
+   "bond_type": "HYBRID",
+   "members": [
+    "vn_tran_hung_dao",
+    "us_washington",
+    "fr_napoleon"
+   ],
+   "name": "Cách Mạng và Độc Lập",
+   "thresholds": [
     {
-      "bond_id": "bond_cach_mang",
-      "bond_type": "HYBRID",
-      "members": [
-        "vn_tran_hung_dao",
-        "us_washington",
-        "fr_napoleon"
-      ],
-      "name": "Cách Mạng và Độc Lập",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "atk_pct": 0.15
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_BATTLE_START"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "cc_immune_first": true,
-            "team_atk_pct": 0.1
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_BATTLE_START"
-        }
-      ]
+     "count": 2,
+     "effect": {
+      "atk_pct": 0.15
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_BATTLE_START"
     },
     {
-      "bond_id": "bond_sam_set",
-      "bond_type": "SYNERGY",
-      "members": [
-        "us_tesla",
-        "az_quetzalcoatl",
-        "vn_chu_dong_tu"
-      ],
-      "name": "Ánh Sáng và Sấm Sét",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "chain_damage_ratio": 0.45,
-            "chain_targets": 2,
-            "mr_shred_duration_sec": 4.0,
-            "mr_shred_percent": 15
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_BASIC_ATTACK"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "team_ap_pct": 0.2
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_BATTLE_START"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_bien_va_song",
-      "bond_type": "SYNERGY",
-      "members": [
-        "vn_yet_kieu",
-        "vn_an_duong_vuong",
-        "uk_robin"
-      ],
-      "name": "Biển, Sông và Cọc Ngà",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "archer_aspd_duration_sec": 4.0,
-            "archer_aspd_pct": 0.2
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_CAST_SKILL"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "stun_duration_sec": 0.8
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_CAST_SKILL"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_hoang_de",
-      "bond_type": "RIVALRY",
-      "members": [
-        "fr_napoleon",
-        "uk_arthur"
-      ],
-      "name": "Hai Hoàng Đế Đối Đầu",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "aspd_pct": -0.1,
-            "hp_pct": 0.12,
-            "rival_win_damage": 2
-          },
-          "scope": "SELF",
-          "trigger": "ON_BATTLE_START"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_kiem_thanh",
-      "bond_type": "RIVALRY",
-      "members": [
-        "jp_musashi",
-        "uk_lancelot"
-      ],
-      "name": "Kiếm Thánh Đông-Tây",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "kill_atk_max_stacks": 2,
-            "kill_atk_pct": 0.25
-          },
-          "scope": "SELF",
-          "trigger": "ON_KILL"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_mat_troi",
-      "bond_type": "SYNERGY",
-      "members": [
-        "cn_hau_nghe",
-        "az_huitzilopochtli",
-        "az_xochiquetzal"
-      ],
-      "name": "Mặt Trời Không Ngủ",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "team_crit": 0.1
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_BATTLE_START"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "crit_burn_duration_sec": 3.0,
-            "crit_burn_pct": 0.02
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_BATTLE_START"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_bong_dem",
-      "bond_type": "SYNERGY",
-      "members": [
-        "vn_yet_kieu",
-        "jp_hanzo",
-        "uk_spring_heeled_jack"
-      ],
-      "name": "Bóng Đêm Ba Châu Lục",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "dodge_pct": 0.15
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_BASIC_ATTACK"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "dodge_next_crit": true
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_BASIC_ATTACK"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_than_va_quai",
-      "bond_type": "HYBRID",
-      "members": [
-        "jp_susanoo",
-        "fr_gevaudan",
-        "us_mothman"
-      ],
-      "name": "Thần và Quái",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "low_hp_aspd_pct": 0.2,
-            "low_hp_damage_taken_pct": 0.15
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_HP_BELOW_50"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "death_heal_pct": 0.2
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_ALLY_DEATH"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_tri_thuc",
-      "bond_type": "SYNERGY",
-      "members": [
-        "cn_khong_minh",
-        "fr_nostradamus",
-        "uk_merlin"
-      ],
-      "name": "Tri Thức Vượt Đại Dương",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "cast_mana_restore": 5
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_CAST_SKILL"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "first_cast_at_sec": 5
-          },
-          "scope": "BOND_MEMBERS",
-          "trigger": "ON_BATTLE_START"
-        }
-      ]
-    },
-    {
-      "bond_id": "bond_co_sac",
-      "bond_type": "SYNERGY",
-      "members": [
-        "fr_joan",
-        "us_lincoln",
-        "vn_hai_ba_trung"
-      ],
-      "name": "Cờ, Kiếm và Tự Do",
-      "thresholds": [
-        {
-          "count": 2,
-          "effect": {
-            "death_shield_pct": 0.1
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_ALLY_DEATH"
-        },
-        {
-          "count": 3,
-          "effect": {
-            "death_atk_duration_sec": 5.0,
-            "death_atk_pct": 0.1,
-            "death_shield_pct": 0.2
-          },
-          "scope": "ALL_ALLIES",
-          "trigger": "ON_ALLY_DEATH"
-        }
-      ]
+     "count": 3,
+     "effect": {
+      "cc_immune_first": true,
+      "team_atk_pct": 0.1
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_BATTLE_START"
     }
-  ],
-  "config_version": "2.1.0",
-  "notes": "Karma Bonds, SRS v2.1 section 7 + Appendix B.2. Thresholds 2/3 (bond_hoang_de and bond_kiem_thanh have a single threshold 2). Engine rule (M3 interpretation of SRS 7.3, documented in docs/m1-notes.md): for each (trigger, scope) group, effects of all met thresholds merge per key, higher threshold winning per key — so bond_co_sac shield goes 10% -> 20% at tier 3 (not 30%), while bond_sam_set keeps chain lightning and gains +20% AP. unit_id vn_hai_ba_trung is kept (display name is Trung Trac)."
+   ]
+  },
+  {
+   "bond_id": "bond_sam_set",
+   "bond_type": "SYNERGY",
+   "members": [
+    "us_tesla",
+    "az_quetzalcoatl",
+    "vn_chu_dong_tu"
+   ],
+   "name": "Ánh Sáng và Sấm Sét",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "chain_damage_ratio": 0.45,
+      "chain_targets": 2,
+      "mr_shred_duration_sec": 4.0,
+      "mr_shred_percent": 15
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_BASIC_ATTACK"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "team_ap_pct": 0.2
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_BATTLE_START"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_bien_va_song",
+   "bond_type": "SYNERGY",
+   "members": [
+    "vn_yet_kieu",
+    "vn_an_duong_vuong",
+    "uk_robin"
+   ],
+   "name": "Biển, Sông và Cọc Ngà",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "archer_aspd_duration_sec": 4.0,
+      "archer_aspd_pct": 0.2
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_CAST_SKILL"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "stun_duration_sec": 0.8
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_CAST_SKILL"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_hoang_de",
+   "bond_type": "RIVALRY",
+   "members": [
+    "fr_napoleon",
+    "uk_arthur"
+   ],
+   "name": "Hai Hoàng Đế Đối Đầu",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "aspd_pct": -0.05,
+      "hp_pct": 0.12,
+      "rival_win_damage": 2
+     },
+     "scope": "SELF",
+     "trigger": "ON_BATTLE_START"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_kiem_thanh",
+   "bond_type": "RIVALRY",
+   "members": [
+    "jp_musashi",
+    "uk_lancelot"
+   ],
+   "name": "Kiếm Thánh Đông-Tây",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "kill_atk_max_stacks": 2,
+      "kill_atk_pct": 0.25
+     },
+     "scope": "SELF",
+     "trigger": "ON_KILL"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_mat_troi",
+   "bond_type": "SYNERGY",
+   "members": [
+    "cn_hau_nghe",
+    "az_huitzilopochtli",
+    "az_xochiquetzal"
+   ],
+   "name": "Mặt Trời Không Ngủ",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "team_crit": 0.1
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_BATTLE_START"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "crit_burn_duration_sec": 3.0,
+      "crit_burn_pct": 0.02
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_BATTLE_START"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_bong_dem",
+   "bond_type": "SYNERGY",
+   "members": [
+    "vn_yet_kieu",
+    "jp_hanzo",
+    "uk_spring_heeled_jack"
+   ],
+   "name": "Bóng Đêm Ba Châu Lục",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "dodge_pct": 0.15
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_BASIC_ATTACK"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "dodge_next_crit": true
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_BASIC_ATTACK"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_than_va_quai",
+   "bond_type": "HYBRID",
+   "members": [
+    "jp_susanoo",
+    "fr_gevaudan",
+    "us_mothman"
+   ],
+   "name": "Thần và Quái",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "low_hp_aspd_pct": 0.2,
+      "low_hp_damage_taken_pct": 0.15
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_HP_BELOW_50"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "death_heal_pct": 0.2
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_ALLY_DEATH"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_tri_thuc",
+   "bond_type": "SYNERGY",
+   "members": [
+    "cn_khong_minh",
+    "fr_nostradamus",
+    "uk_merlin"
+   ],
+   "name": "Tri Thức Vượt Đại Dương",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "cast_mana_restore": 5
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_CAST_SKILL"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "first_cast_at_sec": 5
+     },
+     "scope": "BOND_MEMBERS",
+     "trigger": "ON_BATTLE_START"
+    }
+   ]
+  },
+  {
+   "bond_id": "bond_co_sac",
+   "bond_type": "SYNERGY",
+   "members": [
+    "fr_joan",
+    "us_lincoln",
+    "vn_hai_ba_trung"
+   ],
+   "name": "Cờ, Kiếm và Tự Do",
+   "thresholds": [
+    {
+     "count": 2,
+     "effect": {
+      "death_shield_pct": 0.1
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_ALLY_DEATH"
+    },
+    {
+     "count": 3,
+     "effect": {
+      "death_atk_duration_sec": 5.0,
+      "death_atk_pct": 0.1,
+      "death_shield_pct": 0.2
+     },
+     "scope": "ALL_ALLIES",
+     "trigger": "ON_ALLY_DEATH"
+    }
+   ]
+  }
+ ],
+ "config_version": "2.1.0",
+ "notes": "Karma Bonds, SRS v2.1 section 7 + Appendix B.2. Thresholds 2/3 (bond_hoang_de and bond_kiem_thanh have a single threshold 2). Engine rule (M3 interpretation of SRS 7.3, documented in docs/m1-notes.md): for each (trigger, scope) group, effects of all met thresholds merge per key, higher threshold winning per key — so bond_co_sac shield goes 10% -> 20% at tier 3 (not 30%), while bond_sam_set keeps chain lightning and gains +20% AP. unit_id vn_hai_ba_trung is kept (display name is Trung Trac)."
 }

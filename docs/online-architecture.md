@@ -160,6 +160,15 @@ Không deploy static site trống — Render sẽ fail vì không có file.
   kết quả. Gian lận bằng client sửa số sẽ bị server từ chối (`s2c_error`).
 - JWT hết hạn → client refresh qua Supabase Auth rồi join lại, không dùng
   token cũ.
-- Rate-limit thao tác theo tài khoản (SRS §13) là việc của M2 hoàn thiện:
-  hiện tại room chỉ từ chối sai phase/sai round; thêm rate-limit trước khi
-  mở public.
+- Rate-limit thao tác theo tài khoản (SRS §13): **đã làm ở M4** —
+  10 action/giây ở PREP, 2/giây ở các phase khác; vượt ngưỡng bị khóa
+  thao tác tới hết vòng + ghi telemetry, 5 lần trong 1 trận thì ngắt kết
+  nối. Limiter hiện chạy in-memory trên 1 worker (Render free); khi scale
+  nhiều worker phải chuyển sang Redis theo đúng SRS.
+- Replay verification (SRS §13.2): mỗi vòng được ghi lại input (seed +
+  đội hình) và hash kết quả; kiểm chứng lại sau vòng bằng cách chạy lại
+  sim, lệch hash là `replay_mismatch`. Xem `GET /debug/replay/:matchId`.
+- Chưa có (ngoài M4): hệ thống ban tài khoản (cần store bền vững +
+  quy trình khiếu nại), kiểm chứng phía client (client-side integrity),
+  rate-limit qua Redis đa worker, replay công khai bền vững trên
+  Supabase (hiện chỉ lưu trong bộ nhớ của worker).

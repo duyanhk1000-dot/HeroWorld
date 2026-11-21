@@ -11,16 +11,19 @@
  */
 export const PROTOCOL_VERSION = 1;
 
-/** Client → server intents (SRS §10.1). Clients send intentions only — never results. */
+/** Client → server intents (SRS §10.1). Clients send intentions only — never results.
+ * M4: every prep action may carry an optional `action_id` (client-chosen
+ * unique string). When present, the server rejects a repeat of the same
+ * id in the same round as DUPLICATE_ACTION (replay protection). */
 export type C2SMessage =
   | { type: "c2s_join_queue"; mode: "RANKED" | "CASUAL"; platform: "WEB" | "ANDROID" | "IOS" }
-  | { type: "c2s_move_unit"; round_id: number; from: { zone: "BENCH" | "BOARD"; index: number }; to: { zone: "BENCH" | "BOARD"; index: number } }
-  | { type: "c2s_buy_shop"; round_id: number; shop_slot: number }
-  | { type: "c2s_sell_unit"; round_id: number; zone: "BENCH" | "BOARD"; index: number }
-  | { type: "c2s_reroll_shop"; round_id: number }
-  | { type: "c2s_toggle_lock_shop"; round_id: number }
-  | { type: "c2s_buy_xp"; round_id: number }
-  | { type: "c2s_equip_item"; round_id: number; item_uid: string; target_unit_uid: string };
+  | { type: "c2s_move_unit"; round_id: number; action_id?: string; from: { zone: "BENCH" | "BOARD"; index: number }; to: { zone: "BENCH" | "BOARD"; index: number } }
+  | { type: "c2s_buy_shop"; round_id: number; action_id?: string; shop_slot: number }
+  | { type: "c2s_sell_unit"; round_id: number; action_id?: string; zone: "BENCH" | "BOARD"; index: number }
+  | { type: "c2s_reroll_shop"; round_id: number; action_id?: string }
+  | { type: "c2s_toggle_lock_shop"; round_id: number; action_id?: string }
+  | { type: "c2s_buy_xp"; round_id: number; action_id?: string }
+  | { type: "c2s_equip_item"; round_id: number; action_id?: string; item_uid: string; target_unit_uid: string };
 
 /** Server → client (SRS §10.2). Combat is events-only: move/attack/skill_cast/damage/heal/cc/death/karma_trigger. */
 export type CombatEventType = "move" | "attack" | "skill_cast" | "damage" | "heal" | "cc" | "death" | "karma_trigger";

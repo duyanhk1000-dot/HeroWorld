@@ -169,6 +169,16 @@ export interface ServerEnv {
    * the phase timers for every room on the instance.
    */
   fastMode: boolean;
+  /**
+   * M4: token guarding the /debug/* endpoints (replay verification +
+   * telemetry reports). When set, requests must send it as the
+   * `x-admin-token` header or `?token=` query param. When unset (local
+   * dev), the endpoints are open — never run an unset ADMIN_TOKEN on a
+   * public instance.
+   */
+  adminToken: string;
+  /** M4: path of the JSONL telemetry log (empty = disabled). */
+  telemetryLogPath: string;
 }
 
 export function loadEnv(): ServerEnv {
@@ -183,6 +193,8 @@ export function loadEnv(): ServerEnv {
       .map((s) => s.trim())
       .filter(Boolean),
     fastMode: process.env.M2_FAST === "1",
+    adminToken: process.env.ADMIN_TOKEN ?? "",
+    telemetryLogPath: process.env.TELEMETRY_LOG_PATH ?? "",
   };
 }
 

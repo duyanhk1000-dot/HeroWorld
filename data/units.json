@@ -1,1867 +1,1867 @@
 {
-  "config_version": "2.1.0",
-  "units": [
-    {
-      "unit_id": "vn_thanh_giong",
-      "name": "Thánh Gióng",
-      "nation_id": "VN",
-      "class_id": "GUARDIAN",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_thanh_giong",
-        "portrait_url": "sprites/portraits/vn_thanh_giong.png",
-        "vfx_skill": "vfx/skills/tre_nga_ho_the",
-        "sfx_attack": "sfx/attacks/vn_thanh_giong_attack",
-        "sfx_skill": "sfx/skills/tre_nga_ho_the"
-      },
-      "stats_1star": {
-        "hp": 800,
-        "atk": 55,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.7,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "tre_nga_ho_the",
-        "name": "Tre Ngà Hộ Thể",
-        "type": "shield",
-        "damage_type": "physical",
-        "target_policy": "SELF_ADJACENT",
-        "base_damage": [
-          200,
-          350,
-          600
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "vn_hai_ba_trung",
-      "name": "Trưng Trắc",
-      "nation_id": "VN",
-      "class_id": "WARRIOR",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_hai_ba_trung",
-        "portrait_url": "sprites/portraits/vn_hai_ba_trung.png",
-        "vfx_skill": "vfx/skills/voi_chien_xung_phong",
-        "sfx_attack": "sfx/attacks/vn_hai_ba_trung_attack",
-        "sfx_skill": "sfx/skills/voi_chien_xung_phong"
-      },
-      "stats_1star": {
-        "hp": 900,
-        "atk": 78,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.8,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "voi_chien_xung_phong",
-        "name": "Voi Chiến Xung Phong",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          180,
-          300,
-          550
-        ]
-      },
-      "gender": "female"
-    },
-    {
-      "unit_id": "vn_yet_kieu",
-      "name": "Yết Kiêu",
-      "nation_id": "VN",
-      "class_id": "ASSASSIN",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_yet_kieu",
-        "portrait_url": "sprites/portraits/vn_yet_kieu.png",
-        "vfx_skill": "vfx/skills/lan_kich",
-        "sfx_attack": "sfx/attacks/vn_yet_kieu_attack",
-        "sfx_skill": "sfx/skills/lan_kich"
-      },
-      "stats_1star": {
-        "hp": 560,
-        "atk": 58,
-        "ap": 25,
-        "armor": 25,
-        "mr": 20,
-        "attack_speed": 0.9,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "lan_kich",
-        "name": "Lặn Kích",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          150,
-          260,
-          500
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "vn_an_duong_vuong",
-      "name": "An Dương Vương",
-      "nation_id": "VN",
-      "class_id": "ARCHER",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_an_duong_vuong",
-        "portrait_url": "sprites/portraits/vn_an_duong_vuong.png",
-        "vfx_skill": "vfx/skills/no_than_lien_chau",
-        "sfx_attack": "sfx/attacks/vn_an_duong_vuong_attack",
-        "sfx_skill": "sfx/skills/no_than_lien_chau"
-      },
-      "stats_1star": {
-        "hp": 660,
-        "atk": 70,
-        "ap": 30,
-        "armor": 25,
-        "mr": 30,
-        "attack_speed": 0.75,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "no_than_lien_chau",
-        "name": "Nỏ Thần Liên Châu",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          140,
-          240,
-          450
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "vn_chu_dong_tu",
-      "name": "Chử Đồng Tử",
-      "nation_id": "VN",
-      "class_id": "MAGE",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_chu_dong_tu",
-        "portrait_url": "sprites/portraits/vn_chu_dong_tu.png",
-        "vfx_skill": "vfx/skills/dam_sen_huyen_thuat",
-        "sfx_attack": "sfx/attacks/vn_chu_dong_tu_attack",
-        "sfx_skill": "sfx/skills/dam_sen_huyen_thuat"
-      },
-      "stats_1star": {
-        "hp": 550,
-        "atk": 58,
-        "ap": 85,
-        "armor": 20,
-        "mr": 30,
-        "attack_speed": 0.7,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "dam_sen_huyen_thuat",
-        "name": "Đầm Sen Huyễn Thuật",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          160,
-          280,
-          520
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "vn_tran_hung_dao",
-      "name": "Trần Hưng Đạo",
-      "nation_id": "VN",
-      "class_id": "STRATEGIST",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_tran_hung_dao",
-        "portrait_url": "sprites/portraits/vn_tran_hung_dao.png",
-        "vfx_skill": "vfx/skills/bai_coc_bach_dang",
-        "sfx_attack": "sfx/attacks/vn_tran_hung_dao_attack",
-        "sfx_skill": "sfx/skills/bai_coc_bach_dang"
-      },
-      "stats_1star": {
-        "hp": 950,
-        "atk": 75,
-        "ap": 70,
-        "armor": 40,
-        "mr": 45,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "bai_coc_bach_dang",
-        "name": "Bãi Cọc Bạch Đằng",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          220,
-          380,
-          700
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "vn_son_tinh",
-      "name": "Sơn Tinh",
-      "nation_id": "VN",
-      "class_id": "DIVINE",
-      "cost": 5,
-      "visual": {
-        "model_prefab": "prefabs/units/vn_son_tinh",
-        "portrait_url": "sprites/portraits/vn_son_tinh.png",
-        "vfx_skill": "vfx/skills/nui_tan_vien",
-        "sfx_attack": "sfx/attacks/vn_son_tinh_attack",
-        "sfx_skill": "sfx/skills/nui_tan_vien"
-      },
-      "stats_1star": {
-        "hp": 1150,
-        "atk": 90,
-        "ap": 90,
-        "armor": 50,
-        "mr": 50,
-        "attack_speed": 0.8,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 110
-      },
-      "skill": {
-        "skill_id": "nui_tan_vien",
-        "name": "Núi Tản Viên",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          300,
-          550,
-          1000
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "cn_quan_vu",
-      "name": "Quan Vũ",
-      "nation_id": "CN",
-      "class_id": "GUARDIAN",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_quan_vu",
-        "portrait_url": "sprites/portraits/cn_quan_vu.png",
-        "vfx_skill": "vfx/skills/thanh_long_ho_tran",
-        "sfx_attack": "sfx/attacks/cn_quan_vu_attack",
-        "sfx_skill": "sfx/skills/thanh_long_ho_tran"
-      },
-      "stats_1star": {
-        "hp": 950,
-        "atk": 65,
-        "ap": 30,
-        "armor": 45,
-        "mr": 40,
-        "attack_speed": 0.7,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "thanh_long_ho_tran",
-        "name": "Thanh Long Hộ Trận",
-        "type": "shield",
-        "damage_type": "physical",
-        "target_policy": "SELF_ADJACENT",
-        "base_damage": [
-          250,
-          400,
-          700
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "cn_lu_bo",
-      "name": "Lữ Bố",
-      "nation_id": "CN",
-      "class_id": "WARRIOR",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_lu_bo",
-        "portrait_url": "sprites/portraits/cn_lu_bo.png",
-        "vfx_skill": "vfx/skills/vo_song_kich",
-        "sfx_attack": "sfx/attacks/cn_lu_bo_attack",
-        "sfx_skill": "sfx/skills/vo_song_kich"
-      },
-      "stats_1star": {
-        "hp": 1050,
-        "atk": 88,
-        "ap": 30,
-        "armor": 45,
-        "mr": 40,
-        "attack_speed": 0.8,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "vo_song_kich",
-        "name": "Vô Song Kích",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          240,
-          420,
-          750
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "cn_kinh_kha",
-      "name": "Kinh Kha",
-      "nation_id": "CN",
-      "class_id": "ASSASSIN",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_kinh_kha",
-        "portrait_url": "sprites/portraits/cn_kinh_kha.png",
-        "vfx_skill": "vfx/skills/doan_kiem_dich_thuy",
-        "sfx_attack": "sfx/attacks/cn_kinh_kha_attack",
-        "sfx_skill": "sfx/skills/doan_kiem_dich_thuy"
-      },
-      "stats_1star": {
-        "hp": 580,
-        "atk": 60,
-        "ap": 25,
-        "armor": 25,
-        "mr": 20,
-        "attack_speed": 0.9,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "doan_kiem_dich_thuy",
-        "name": "Đoản Kiếm Dịch Thủy",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          160,
-          280,
-          520
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "cn_hau_nghe",
-      "name": "Hậu Nghệ",
-      "nation_id": "CN",
-      "class_id": "ARCHER",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_hau_nghe",
-        "portrait_url": "sprites/portraits/cn_hau_nghe.png",
-        "vfx_skill": "vfx/skills/xa_nhat",
-        "sfx_attack": "sfx/attacks/cn_hau_nghe_attack",
-        "sfx_skill": "sfx/skills/xa_nhat"
-      },
-      "stats_1star": {
-        "hp": 560,
-        "atk": 60,
-        "ap": 30,
-        "armor": 20,
-        "mr": 25,
-        "attack_speed": 0.75,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "xa_nhat",
-        "name": "Xạ Nhật",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          150,
-          260,
-          500
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "cn_nu_oa",
-      "name": "Nữ Oa",
-      "nation_id": "CN",
-      "class_id": "MAGE",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_nu_oa",
-        "portrait_url": "sprites/portraits/cn_nu_oa.png",
-        "vfx_skill": "vfx/skills/ngu_sac_thach",
-        "sfx_attack": "sfx/attacks/cn_nu_oa_attack",
-        "sfx_skill": "sfx/skills/ngu_sac_thach"
-      },
-      "stats_1star": {
-        "hp": 760,
-        "atk": 78,
-        "ap": 95,
-        "armor": 30,
-        "mr": 40,
-        "attack_speed": 0.7,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "ngu_sac_thach",
-        "name": "Ngũ Sắc Thạch",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          200,
-          360,
-          650
-        ]
-      },
-      "gender": "female"
-    },
-    {
-      "unit_id": "cn_khong_minh",
-      "name": "Khổng Minh",
-      "nation_id": "CN",
-      "class_id": "STRATEGIST",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_khong_minh",
-        "portrait_url": "sprites/portraits/cn_khong_minh.png",
-        "vfx_skill": "vfx/skills/bat_tran_do",
-        "sfx_attack": "sfx/attacks/cn_khong_minh_attack",
-        "sfx_skill": "sfx/skills/bat_tran_do"
-      },
-      "stats_1star": {
-        "hp": 820,
-        "atk": 68,
-        "ap": 80,
-        "armor": 35,
-        "mr": 40,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "bat_tran_do",
-        "name": "Bát Trận Đồ",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          180,
-          320,
-          600
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "cn_ton_ngo_khong",
-      "name": "Tôn Ngộ Không",
-      "nation_id": "CN",
-      "class_id": "DIVINE",
-      "cost": 5,
-      "visual": {
-        "model_prefab": "prefabs/units/cn_ton_ngo_khong",
-        "portrait_url": "sprites/portraits/cn_ton_ngo_khong.png",
-        "vfx_skill": "vfx/skills/bay_hai_phep_bien_hoa",
-        "sfx_attack": "sfx/attacks/cn_ton_ngo_khong_attack",
-        "sfx_skill": "sfx/skills/bay_hai_phep_bien_hoa"
-      },
-      "stats_1star": {
-        "hp": 1100,
-        "atk": 95,
-        "ap": 80,
-        "armor": 50,
-        "mr": 45,
-        "attack_speed": 0.85,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 110
-      },
-      "skill": {
-        "skill_id": "bay_hai_phep_bien_hoa",
-        "name": "72 Phép Biến Hóa",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          320,
-          580,
-          1050
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_honda",
-      "name": "Honda Tadakatsu",
-      "nation_id": "JP",
-      "class_id": "GUARDIAN",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_honda",
-        "portrait_url": "sprites/portraits/jp_honda.png",
-        "vfx_skill": "vfx/skills/thuong_tonbokiri",
-        "sfx_attack": "sfx/attacks/jp_honda_attack",
-        "sfx_skill": "sfx/skills/thuong_tonbokiri"
-      },
-      "stats_1star": {
-        "hp": 790,
-        "atk": 58,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.7,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "thuong_tonbokiri",
-        "name": "Thương Tonbokiri",
-        "type": "shield",
-        "damage_type": "physical",
-        "target_policy": "SELF_ADJACENT",
-        "base_damage": [
-          200,
-          350,
-          600
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_musashi",
-      "name": "Miyamoto Musashi",
-      "nation_id": "JP",
-      "class_id": "WARRIOR",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_musashi",
-        "portrait_url": "sprites/portraits/jp_musashi.png",
-        "vfx_skill": "vfx/skills/nhi_thien_nhat_luu",
-        "sfx_attack": "sfx/attacks/jp_musashi_attack",
-        "sfx_skill": "sfx/skills/nhi_thien_nhat_luu"
-      },
-      "stats_1star": {
-        "hp": 880,
-        "atk": 80,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.85,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "nhi_thien_nhat_luu",
-        "name": "Nhị Thiên Nhất Lưu",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          200,
-          340,
-          600
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_hanzo",
-      "name": "Hattori Hanzo",
-      "nation_id": "JP",
-      "class_id": "ASSASSIN",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_hanzo",
-        "portrait_url": "sprites/portraits/jp_hanzo.png",
-        "vfx_skill": "vfx/skills/am_sat_trong_bong",
-        "sfx_attack": "sfx/attacks/jp_hanzo_attack",
-        "sfx_skill": "sfx/skills/am_sat_trong_bong"
-      },
-      "stats_1star": {
-        "hp": 660,
-        "atk": 68,
-        "ap": 25,
-        "armor": 30,
-        "mr": 25,
-        "attack_speed": 0.9,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "am_sat_trong_bong",
-        "name": "Ám Sát Trong Bóng",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          180,
-          300,
-          550
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_nobunaga",
-      "name": "Oda Nobunaga",
-      "nation_id": "JP",
-      "class_id": "ARCHER",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_nobunaga",
-        "portrait_url": "sprites/portraits/jp_nobunaga.png",
-        "vfx_skill": "vfx/skills/tam_doan_thiet_phao",
-        "sfx_attack": "sfx/attacks/jp_nobunaga_attack",
-        "sfx_skill": "sfx/skills/tam_doan_thiet_phao"
-      },
-      "stats_1star": {
-        "hp": 760,
-        "atk": 80,
-        "ap": 30,
-        "armor": 30,
-        "mr": 35,
-        "attack_speed": 0.75,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "tam_doan_thiet_phao",
-        "name": "Tam Đoạn Thiết Pháo",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          190,
-          340,
-          620
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_seimei",
-      "name": "Abe no Seimei",
-      "nation_id": "JP",
-      "class_id": "MAGE",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_seimei",
-        "portrait_url": "sprites/portraits/jp_seimei.png",
-        "vfx_skill": "vfx/skills/ngu_mang_tinh",
-        "sfx_attack": "sfx/attacks/jp_seimei_attack",
-        "sfx_skill": "sfx/skills/ngu_mang_tinh"
-      },
-      "stats_1star": {
-        "hp": 750,
-        "atk": 76,
-        "ap": 100,
-        "armor": 30,
-        "mr": 45,
-        "attack_speed": 0.7,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "ngu_mang_tinh",
-        "name": "Ngũ Mang Tinh",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          210,
-          380,
-          680
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_shingen",
-      "name": "Takeda Shingen",
-      "nation_id": "JP",
-      "class_id": "STRATEGIST",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_shingen",
-        "portrait_url": "sprites/portraits/jp_shingen.png",
-        "vfx_skill": "vfx/skills/phong_lam_hoa_son",
-        "sfx_attack": "sfx/attacks/jp_shingen_attack",
-        "sfx_skill": "sfx/skills/phong_lam_hoa_son"
-      },
-      "stats_1star": {
-        "hp": 780,
-        "atk": 65,
-        "ap": 65,
-        "armor": 35,
-        "mr": 35,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "phong_lam_hoa_son",
-        "name": "Phong Lâm Hỏa Sơn",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          160,
-          280,
-          520
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "jp_susanoo",
-      "name": "Susanoo",
-      "nation_id": "JP",
-      "class_id": "DIVINE",
-      "cost": 5,
-      "visual": {
-        "model_prefab": "prefabs/units/jp_susanoo",
-        "portrait_url": "sprites/portraits/jp_susanoo.png",
-        "vfx_skill": "vfx/skills/bao_to_thao_the_kiem",
-        "sfx_attack": "sfx/attacks/jp_susanoo_attack",
-        "sfx_skill": "sfx/skills/bao_to_thao_the_kiem"
-      },
-      "stats_1star": {
-        "hp": 1200,
-        "atk": 92,
-        "ap": 85,
-        "armor": 55,
-        "mr": 50,
-        "attack_speed": 0.8,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 120
-      },
-      "skill": {
-        "skill_id": "bao_to_thao_the_kiem",
-        "name": "Bão Tố Thảo Thế Kiếm",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          330,
-          600,
-          1100
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "fr_joan",
-      "name": "Joan of Arc",
-      "nation_id": "FR",
-      "class_id": "GUARDIAN",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_joan",
-        "portrait_url": "sprites/portraits/fr_joan.png",
-        "vfx_skill": "vfx/skills/co_thanh_ho_menh",
-        "sfx_attack": "sfx/attacks/fr_joan_attack",
-        "sfx_skill": "sfx/skills/co_thanh_ho_menh"
-      },
-      "stats_1star": {
-        "hp": 950,
-        "atk": 65,
-        "ap": 30,
-        "armor": 45,
-        "mr": 40,
-        "attack_speed": 0.7,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "co_thanh_ho_menh",
-        "name": "Cờ Thánh Hộ Mệnh",
-        "type": "shield",
-        "damage_type": "physical",
-        "target_policy": "SELF_ADJACENT",
-        "base_damage": [
-          250,
-          400,
-          700
-        ]
-      },
-      "gender": "female"
-    },
-    {
-      "unit_id": "fr_martel",
-      "name": "Charles Martel",
-      "nation_id": "FR",
-      "class_id": "WARRIOR",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_martel",
-        "portrait_url": "sprites/portraits/fr_martel.png",
-        "vfx_skill": "vfx/skills/bua_martel",
-        "sfx_attack": "sfx/attacks/fr_martel_attack",
-        "sfx_skill": "sfx/skills/bua_martel"
-      },
-      "stats_1star": {
-        "hp": 800,
-        "atk": 68,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.75,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "bua_martel",
-        "name": "Búa Martel",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          180,
-          300,
-          550
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "fr_lupin",
-      "name": "Arsène Lupin",
-      "nation_id": "FR",
-      "class_id": "ASSASSIN",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_lupin",
-        "portrait_url": "sprites/portraits/fr_lupin.png",
-        "vfx_skill": "vfx/skills/danh_cap_nhip_don",
-        "sfx_attack": "sfx/attacks/fr_lupin_attack",
-        "sfx_skill": "sfx/skills/danh_cap_nhip_don"
-      },
-      "stats_1star": {
-        "hp": 680,
-        "atk": 70,
-        "ap": 25,
-        "armor": 30,
-        "mr": 25,
-        "attack_speed": 0.9,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "danh_cap_nhip_don",
-        "name": "Đánh Cắp Nhịp Đòn",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          180,
-          300,
-          550
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "fr_dartagnan",
-      "name": "D'Artagnan",
-      "nation_id": "FR",
-      "class_id": "ARCHER",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_dartagnan",
-        "portrait_url": "sprites/portraits/fr_dartagnan.png",
-        "vfx_skill": "vfx/skills/ngu_lam_phao_thu",
-        "sfx_attack": "sfx/attacks/fr_dartagnan_attack",
-        "sfx_skill": "sfx/skills/ngu_lam_phao_thu"
-      },
-      "stats_1star": {
-        "hp": 580,
-        "atk": 60,
-        "ap": 30,
-        "armor": 20,
-        "mr": 25,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "ngu_lam_phao_thu",
-        "name": "Ngự Lâm Pháo Thủ",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          150,
-          260,
-          500
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "fr_nostradamus",
-      "name": "Nostradamus",
-      "nation_id": "FR",
-      "class_id": "MAGE",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_nostradamus",
-        "portrait_url": "sprites/portraits/fr_nostradamus.png",
-        "vfx_skill": "vfx/skills/tien_tri_sao_bang",
-        "sfx_attack": "sfx/attacks/fr_nostradamus_attack",
-        "sfx_skill": "sfx/skills/tien_tri_sao_bang"
-      },
-      "stats_1star": {
-        "hp": 660,
-        "atk": 62,
-        "ap": 90,
-        "armor": 25,
-        "mr": 35,
-        "attack_speed": 0.7,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "tien_tri_sao_bang",
-        "name": "Tiên Tri Sao Băng",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          180,
-          320,
-          580
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "fr_napoleon",
-      "name": "Napoleon Bonaparte",
-      "nation_id": "FR",
-      "class_id": "STRATEGIST",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_napoleon",
-        "portrait_url": "sprites/portraits/fr_napoleon.png",
-        "vfx_skill": "vfx/skills/dai_phao_austerlitz",
-        "sfx_attack": "sfx/attacks/fr_napoleon_attack",
-        "sfx_skill": "sfx/skills/dai_phao_austerlitz"
-      },
-      "stats_1star": {
-        "hp": 950,
-        "atk": 75,
-        "ap": 85,
-        "armor": 40,
-        "mr": 45,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "dai_phao_austerlitz",
-        "name": "Đại Pháo Austerlitz",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          240,
-          420,
-          750
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "fr_gevaudan",
-      "name": "Quái vật Gévaudan",
-      "nation_id": "FR",
-      "class_id": "DIVINE",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/fr_gevaudan",
-        "portrait_url": "sprites/portraits/fr_gevaudan.png",
-        "vfx_skill": "vfx/skills/cuong_san",
-        "sfx_attack": "sfx/attacks/fr_gevaudan_attack",
-        "sfx_skill": "sfx/skills/cuong_san"
-      },
-      "stats_1star": {
-        "hp": 1050,
-        "atk": 88,
-        "ap": 40,
-        "armor": 45,
-        "mr": 40,
-        "attack_speed": 0.85,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "cuong_san",
-        "name": "Cuồng Săn",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          250,
-          440,
-          800
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "us_bunyan",
-      "name": "Paul Bunyan",
-      "nation_id": "US",
-      "class_id": "GUARDIAN",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/us_bunyan",
-        "portrait_url": "sprites/portraits/us_bunyan.png",
-        "vfx_skill": "vfx/skills/riu_dai_thu",
-        "sfx_attack": "sfx/attacks/us_bunyan_attack",
-        "sfx_skill": "sfx/skills/riu_dai_thu"
-      },
-      "stats_1star": {
-        "hp": 700,
-        "atk": 55,
-        "ap": 25,
-        "armor": 35,
-        "mr": 30,
-        "attack_speed": 0.7,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "riu_dai_thu",
-        "name": "Rìu Đại Thụ",
-        "type": "shield",
-        "damage_type": "physical",
-        "target_policy": "SELF_ADJACENT",
-        "base_damage": [
-          200,
-          350,
-          600
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "us_washington",
-      "name": "George Washington",
-      "nation_id": "US",
-      "class_id": "WARRIOR",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/us_washington",
-        "portrait_url": "sprites/portraits/us_washington.png",
-        "vfx_skill": "vfx/skills/vuot_song_delaware",
-        "sfx_attack": "sfx/attacks/us_washington_attack",
-        "sfx_skill": "sfx/skills/vuot_song_delaware"
-      },
-      "stats_1star": {
-        "hp": 900,
-        "atk": 78,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.8,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "vuot_song_delaware",
-        "name": "Vượt Sông Delaware",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          200,
-          340,
-          620
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "us_billy",
-      "name": "Billy the Kid",
-      "nation_id": "US",
-      "class_id": "ASSASSIN",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/us_billy",
-        "portrait_url": "sprites/portraits/us_billy.png",
-        "vfx_skill": "vfx/skills/rut_sung_chop_nhoang",
-        "sfx_attack": "sfx/attacks/us_billy_attack",
-        "sfx_skill": "sfx/skills/rut_sung_chop_nhoang"
-      },
-      "stats_1star": {
-        "hp": 660,
-        "atk": 70,
-        "ap": 25,
-        "armor": 25,
-        "mr": 25,
-        "attack_speed": 0.9,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "rut_sung_chop_nhoang",
-        "name": "Rút Súng Chớp Nhoáng",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          180,
-          300,
-          550
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "us_oakley",
-      "name": "Annie Oakley",
-      "nation_id": "US",
-      "class_id": "ARCHER",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/us_oakley",
-        "portrait_url": "sprites/portraits/us_oakley.png",
-        "vfx_skill": "vfx/skills/xa_thu_tram_phat",
-        "sfx_attack": "sfx/attacks/us_oakley_attack",
-        "sfx_skill": "sfx/skills/xa_thu_tram_phat"
-      },
-      "stats_1star": {
-        "hp": 560,
-        "atk": 60,
-        "ap": 30,
-        "armor": 20,
-        "mr": 25,
-        "attack_speed": 0.8,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "xa_thu_tram_phat",
-        "name": "Xạ Thủ Trăm Phát",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          150,
-          260,
-          500
-        ]
-      },
-      "gender": "female"
-    },
-    {
-      "unit_id": "us_tesla",
-      "name": "Nikola Tesla",
-      "nation_id": "US",
-      "class_id": "MAGE",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/us_tesla",
-        "portrait_url": "sprites/portraits/us_tesla.png",
-        "vfx_skill": "vfx/skills/thap_wardenclyffe",
-        "sfx_attack": "sfx/attacks/us_tesla_attack",
-        "sfx_skill": "sfx/skills/thap_wardenclyffe"
-      },
-      "stats_1star": {
-        "hp": 900,
-        "atk": 72,
-        "ap": 100,
-        "armor": 35,
-        "mr": 45,
-        "attack_speed": 0.8,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "thap_wardenclyffe",
-        "name": "Tháp Wardenclyffe",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          260,
-          460,
-          850
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "us_lincoln",
-      "name": "Abraham Lincoln",
-      "nation_id": "US",
-      "class_id": "STRATEGIST",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/us_lincoln",
-        "portrait_url": "sprites/portraits/us_lincoln.png",
-        "vfx_skill": "vfx/skills/tuyen_ngon_doan_ket",
-        "sfx_attack": "sfx/attacks/us_lincoln_attack",
-        "sfx_skill": "sfx/skills/tuyen_ngon_doan_ket"
-      },
-      "stats_1star": {
-        "hp": 850,
-        "atk": 68,
-        "ap": 80,
-        "armor": 35,
-        "mr": 40,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "tuyen_ngon_doan_ket",
-        "name": "Tuyên Ngôn Đoàn Kết",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          200,
-          360,
-          650
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "us_mothman",
-      "name": "Mothman",
-      "nation_id": "US",
-      "class_id": "DIVINE",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/us_mothman",
-        "portrait_url": "sprites/portraits/us_mothman.png",
-        "vfx_skill": "vfx/skills/diem_bao_canh_dem",
-        "sfx_attack": "sfx/attacks/us_mothman_attack",
-        "sfx_skill": "sfx/skills/diem_bao_canh_dem"
-      },
-      "stats_1star": {
-        "hp": 1000,
-        "atk": 85,
-        "ap": 90,
-        "armor": 40,
-        "mr": 45,
-        "attack_speed": 0.8,
-        "attack_range": 2,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "diem_bao_canh_dem",
-        "name": "Điềm Báo Cánh Đêm",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          240,
-          420,
-          760
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "az_cuauhtemoc",
-      "name": "Cuauhtémoc",
-      "nation_id": "AZ",
-      "class_id": "GUARDIAN",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/az_cuauhtemoc",
-        "portrait_url": "sprites/portraits/az_cuauhtemoc.png",
-        "vfx_skill": "vfx/skills/khien_chim_ung",
-        "sfx_attack": "sfx/attacks/az_cuauhtemoc_attack",
-        "sfx_skill": "sfx/skills/khien_chim_ung"
-      },
-      "stats_1star": {
-        "hp": 680,
-        "atk": 55,
-        "ap": 25,
-        "armor": 35,
-        "mr": 30,
-        "attack_speed": 0.7,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "khien_chim_ung",
-        "name": "Khiên Chim Ưng",
-        "type": "shield",
-        "damage_type": "physical",
-        "target_policy": "SELF_ADJACENT",
-        "base_damage": [
-          200,
-          350,
-          600
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "az_jaguar",
-      "name": "Chiến Binh Báo Đốm",
-      "nation_id": "AZ",
-      "class_id": "WARRIOR",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/az_jaguar",
-        "portrait_url": "sprites/portraits/az_jaguar.png",
-        "vfx_skill": "vfx/skills/vuot_bao_dom",
-        "sfx_attack": "sfx/attacks/az_jaguar_attack",
-        "sfx_skill": "sfx/skills/vuot_bao_dom"
-      },
-      "stats_1star": {
-        "hp": 650,
-        "atk": 60,
-        "ap": 25,
-        "armor": 30,
-        "mr": 20,
-        "attack_speed": 0.85,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "vuot_bao_dom",
-        "name": "Vuốt Báo Đốm",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          160,
-          280,
-          520
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "az_eagle",
-      "name": "Chiến Binh Đại Bàng",
-      "nation_id": "AZ",
-      "class_id": "ASSASSIN",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/az_eagle",
-        "portrait_url": "sprites/portraits/az_eagle.png",
-        "vfx_skill": "vfx/skills/sa_xuong_san_moi",
-        "sfx_attack": "sfx/attacks/az_eagle_attack",
-        "sfx_skill": "sfx/skills/sa_xuong_san_moi"
-      },
-      "stats_1star": {
-        "hp": 580,
-        "atk": 60,
-        "ap": 25,
-        "armor": 25,
-        "mr": 20,
-        "attack_speed": 0.9,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "sa_xuong_san_moi",
-        "name": "Sà Xuống Săn Mồi",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          160,
-          280,
-          520
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "az_xochiquetzal",
-      "name": "Xochiquetzal",
-      "nation_id": "AZ",
-      "class_id": "ARCHER",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/az_xochiquetzal",
-        "portrait_url": "sprites/portraits/az_xochiquetzal.png",
-        "vfx_skill": "vfx/skills/mui_ten_hoa",
-        "sfx_attack": "sfx/attacks/az_xochiquetzal_attack",
-        "sfx_skill": "sfx/skills/mui_ten_hoa"
-      },
-      "stats_1star": {
-        "hp": 660,
-        "atk": 68,
-        "ap": 40,
-        "armor": 25,
-        "mr": 30,
-        "attack_speed": 0.75,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "mui_ten_hoa",
-        "name": "Mũi Tên Hoa",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          170,
-          300,
-          560
-        ]
-      },
-      "gender": "female"
-    },
-    {
-      "unit_id": "az_quetzalcoatl",
-      "name": "Quetzalcoatl",
-      "nation_id": "AZ",
-      "class_id": "MAGE",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/az_quetzalcoatl",
-        "portrait_url": "sprites/portraits/az_quetzalcoatl.png",
-        "vfx_skill": "vfx/skills/gio_long_vu",
-        "sfx_attack": "sfx/attacks/az_quetzalcoatl_attack",
-        "sfx_skill": "sfx/skills/gio_long_vu"
-      },
-      "stats_1star": {
-        "hp": 920,
-        "atk": 70,
-        "ap": 100,
-        "armor": 35,
-        "mr": 45,
-        "attack_speed": 0.75,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "gio_long_vu",
-        "name": "Gió Lông Vũ",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          260,
-          460,
-          850
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "az_montezuma",
-      "name": "Montezuma II",
-      "nation_id": "AZ",
-      "class_id": "STRATEGIST",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/az_montezuma",
-        "portrait_url": "sprites/portraits/az_montezuma.png",
-        "vfx_skill": "vfx/skills/lich_mat_troi",
-        "sfx_attack": "sfx/attacks/az_montezuma_attack",
-        "sfx_skill": "sfx/skills/lich_mat_troi"
-      },
-      "stats_1star": {
-        "hp": 600,
-        "atk": 58,
-        "ap": 85,
-        "armor": 25,
-        "mr": 30,
-        "attack_speed": 0.7,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "lich_mat_troi",
-        "name": "Lịch Mặt Trời",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          150,
-          260,
-          500
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "az_huitzilopochtli",
-      "name": "Huitzilopochtli",
-      "nation_id": "AZ",
-      "class_id": "DIVINE",
-      "cost": 5,
-      "visual": {
-        "model_prefab": "prefabs/units/az_huitzilopochtli",
-        "portrait_url": "sprites/portraits/az_huitzilopochtli.png",
-        "vfx_skill": "vfx/skills/mat_troi_chien_tranh",
-        "sfx_attack": "sfx/attacks/az_huitzilopochtli_attack",
-        "sfx_skill": "sfx/skills/mat_troi_chien_tranh"
-      },
-      "stats_1star": {
-        "hp": 1150,
-        "atk": 92,
-        "ap": 95,
-        "armor": 50,
-        "mr": 50,
-        "attack_speed": 0.8,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 110
-      },
-      "skill": {
-        "skill_id": "mat_troi_chien_tranh",
-        "name": "Mặt Trời Chiến Tranh",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          320,
-          580,
-          1050
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "uk_beowulf",
-      "name": "Beowulf",
-      "nation_id": "UK",
-      "class_id": "DIVINE",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_beowulf",
-        "portrait_url": "sprites/portraits/uk_beowulf.png",
-        "vfx_skill": "vfx/skills/san_quai_grendel",
-        "sfx_attack": "sfx/attacks/uk_beowulf_attack",
-        "sfx_skill": "sfx/skills/san_quai_grendel"
-      },
-      "stats_1star": {
-        "hp": 950,
-        "atk": 80,
-        "ap": 35,
-        "armor": 45,
-        "mr": 40,
-        "attack_speed": 0.8,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "san_quai_grendel",
-        "name": "Săn Quái Grendel",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          210,
-          360,
-          650
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "uk_arthur",
-      "name": "King Arthur",
-      "nation_id": "UK",
-      "class_id": "GUARDIAN",
-      "cost": 4,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_arthur",
-        "portrait_url": "sprites/portraits/uk_arthur.png",
-        "vfx_skill": "vfx/skills/excalibur_ho_vuong",
-        "sfx_attack": "sfx/attacks/uk_arthur_attack",
-        "sfx_skill": "sfx/skills/excalibur_ho_vuong"
-      },
-      "stats_1star": {
-        "hp": 1080,
-        "atk": 85,
-        "ap": 30,
-        "armor": 50,
-        "mr": 45,
-        "attack_speed": 0.75,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 100
-      },
-      "skill": {
-        "skill_id": "excalibur_ho_vuong",
-        "name": "Excalibur Hộ Vương",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          240,
-          420,
-          750
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "uk_spring_heeled_jack",
-      "name": "Spring-heeled Jack",
-      "nation_id": "UK",
-      "class_id": "ASSASSIN",
-      "cost": 3,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_spring_heeled_jack",
-        "portrait_url": "sprites/portraits/uk_spring_heeled_jack.png",
-        "vfx_skill": "vfx/skills/nhay_bong_dem",
-        "sfx_attack": "sfx/attacks/uk_spring_heeled_jack_attack",
-        "sfx_skill": "sfx/skills/nhay_bong_dem"
-      },
-      "stats_1star": {
-        "hp": 780,
-        "atk": 78,
-        "ap": 30,
-        "armor": 30,
-        "mr": 30,
-        "attack_speed": 0.9,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 90
-      },
-      "skill": {
-        "skill_id": "nhay_bong_dem",
-        "name": "Nhảy Bóng Đêm",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          210,
-          360,
-          650
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "uk_robin",
-      "name": "Robin Hood",
-      "nation_id": "UK",
-      "class_id": "ARCHER",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_robin",
-        "portrait_url": "sprites/portraits/uk_robin.png",
-        "vfx_skill": "vfx/skills/mui_ten_sherwood",
-        "sfx_attack": "sfx/attacks/uk_robin_attack",
-        "sfx_skill": "sfx/skills/mui_ten_sherwood"
-      },
-      "stats_1star": {
-        "hp": 660,
-        "atk": 70,
-        "ap": 30,
-        "armor": 25,
-        "mr": 30,
-        "attack_speed": 0.8,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "mui_ten_sherwood",
-        "name": "Mũi Tên Sherwood",
-        "type": "aoe",
-        "damage_type": "physical",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          170,
-          300,
-          560
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "uk_morgana",
-      "name": "Morgana",
-      "nation_id": "UK",
-      "class_id": "MAGE",
-      "cost": 1,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_morgana",
-        "portrait_url": "sprites/portraits/uk_morgana.png",
-        "vfx_skill": "vfx/skills/suong_mu_avalon",
-        "sfx_attack": "sfx/attacks/uk_morgana_attack",
-        "sfx_skill": "sfx/skills/suong_mu_avalon"
-      },
-      "stats_1star": {
-        "hp": 550,
-        "atk": 55,
-        "ap": 90,
-        "armor": 20,
-        "mr": 30,
-        "attack_speed": 0.7,
-        "attack_range": 4,
-        "start_mana": 0,
-        "max_mana": 70
-      },
-      "skill": {
-        "skill_id": "suong_mu_avalon",
-        "name": "Sương Mù Avalon",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          160,
-          280,
-          520
-        ]
-      },
-      "gender": "female"
-    },
-    {
-      "unit_id": "uk_merlin",
-      "name": "Merlin",
-      "nation_id": "UK",
-      "class_id": "STRATEGIST",
-      "cost": 5,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_merlin",
-        "portrait_url": "sprites/portraits/uk_merlin.png",
-        "vfx_skill": "vfx/skills/tien_tri_camelot",
-        "sfx_attack": "sfx/attacks/uk_merlin_attack",
-        "sfx_skill": "sfx/skills/tien_tri_camelot"
-      },
-      "stats_1star": {
-        "hp": 1000,
-        "atk": 75,
-        "ap": 100,
-        "armor": 40,
-        "mr": 50,
-        "attack_speed": 0.75,
-        "attack_range": 3,
-        "start_mana": 0,
-        "max_mana": 110
-      },
-      "skill": {
-        "skill_id": "tien_tri_camelot",
-        "name": "Tiên Tri Camelot",
-        "type": "aoe",
-        "damage_type": "magic",
-        "target_policy": "HIGHEST_DPS_CLUSTER",
-        "base_damage": [
-          320,
-          580,
-          1050
-        ]
-      },
-      "gender": "male"
-    },
-    {
-      "unit_id": "uk_lancelot",
-      "name": "Lancelot",
-      "nation_id": "UK",
-      "class_id": "WARRIOR",
-      "cost": 2,
-      "visual": {
-        "model_prefab": "prefabs/units/uk_lancelot",
-        "portrait_url": "sprites/portraits/uk_lancelot.png",
-        "vfx_skill": "vfx/skills/kiem_si_ho_quang",
-        "sfx_attack": "sfx/attacks/uk_lancelot_attack",
-        "sfx_skill": "sfx/skills/kiem_si_ho_quang"
-      },
-      "stats_1star": {
-        "hp": 820,
-        "atk": 72,
-        "ap": 30,
-        "armor": 40,
-        "mr": 35,
-        "attack_speed": 0.85,
-        "attack_range": 1,
-        "start_mana": 0,
-        "max_mana": 80
-      },
-      "skill": {
-        "skill_id": "kiem_si_ho_quang",
-        "name": "Kiếm Sĩ Hồ Quang",
-        "type": "damage",
-        "damage_type": "physical",
-        "target_policy": "NEAREST",
-        "base_damage": [
-          190,
-          320,
-          580
-        ]
-      },
-      "gender": "male"
-    }
-  ]
+ "config_version": "2.1.0",
+ "units": [
+  {
+   "unit_id": "vn_thanh_giong",
+   "name": "Thánh Gióng",
+   "nation_id": "VN",
+   "class_id": "GUARDIAN",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_thanh_giong",
+    "portrait_url": "sprites/portraits/vn_thanh_giong.png",
+    "vfx_skill": "vfx/skills/tre_nga_ho_the",
+    "sfx_attack": "sfx/attacks/vn_thanh_giong_attack",
+    "sfx_skill": "sfx/skills/tre_nga_ho_the"
+   },
+   "stats_1star": {
+    "hp": 800,
+    "atk": 55,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.7,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "tre_nga_ho_the",
+    "name": "Tre Ngà Hộ Thể",
+    "type": "shield",
+    "damage_type": "physical",
+    "target_policy": "SELF_ADJACENT",
+    "base_damage": [
+     200,
+     350,
+     600
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "vn_hai_ba_trung",
+   "name": "Trưng Trắc",
+   "nation_id": "VN",
+   "class_id": "WARRIOR",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_hai_ba_trung",
+    "portrait_url": "sprites/portraits/vn_hai_ba_trung.png",
+    "vfx_skill": "vfx/skills/voi_chien_xung_phong",
+    "sfx_attack": "sfx/attacks/vn_hai_ba_trung_attack",
+    "sfx_skill": "sfx/skills/voi_chien_xung_phong"
+   },
+   "stats_1star": {
+    "hp": 900,
+    "atk": 78,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.8,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "voi_chien_xung_phong",
+    "name": "Voi Chiến Xung Phong",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     180,
+     300,
+     550
+    ]
+   },
+   "gender": "female"
+  },
+  {
+   "unit_id": "vn_yet_kieu",
+   "name": "Yết Kiêu",
+   "nation_id": "VN",
+   "class_id": "ASSASSIN",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_yet_kieu",
+    "portrait_url": "sprites/portraits/vn_yet_kieu.png",
+    "vfx_skill": "vfx/skills/lan_kich",
+    "sfx_attack": "sfx/attacks/vn_yet_kieu_attack",
+    "sfx_skill": "sfx/skills/lan_kich"
+   },
+   "stats_1star": {
+    "hp": 560,
+    "atk": 62,
+    "ap": 25,
+    "armor": 25,
+    "mr": 20,
+    "attack_speed": 0.9,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "lan_kich",
+    "name": "Lặn Kích",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     150,
+     260,
+     500
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "vn_an_duong_vuong",
+   "name": "An Dương Vương",
+   "nation_id": "VN",
+   "class_id": "ARCHER",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_an_duong_vuong",
+    "portrait_url": "sprites/portraits/vn_an_duong_vuong.png",
+    "vfx_skill": "vfx/skills/no_than_lien_chau",
+    "sfx_attack": "sfx/attacks/vn_an_duong_vuong_attack",
+    "sfx_skill": "sfx/skills/no_than_lien_chau"
+   },
+   "stats_1star": {
+    "hp": 660,
+    "atk": 70,
+    "ap": 30,
+    "armor": 25,
+    "mr": 30,
+    "attack_speed": 0.75,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "no_than_lien_chau",
+    "name": "Nỏ Thần Liên Châu",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     170,
+     300,
+     560
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "vn_chu_dong_tu",
+   "name": "Chử Đồng Tử",
+   "nation_id": "VN",
+   "class_id": "MAGE",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_chu_dong_tu",
+    "portrait_url": "sprites/portraits/vn_chu_dong_tu.png",
+    "vfx_skill": "vfx/skills/dam_sen_huyen_thuat",
+    "sfx_attack": "sfx/attacks/vn_chu_dong_tu_attack",
+    "sfx_skill": "sfx/skills/dam_sen_huyen_thuat"
+   },
+   "stats_1star": {
+    "hp": 550,
+    "atk": 58,
+    "ap": 85,
+    "armor": 20,
+    "mr": 30,
+    "attack_speed": 0.7,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "dam_sen_huyen_thuat",
+    "name": "Đầm Sen Huyễn Thuật",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     160,
+     280,
+     520
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "vn_tran_hung_dao",
+   "name": "Trần Hưng Đạo",
+   "nation_id": "VN",
+   "class_id": "STRATEGIST",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_tran_hung_dao",
+    "portrait_url": "sprites/portraits/vn_tran_hung_dao.png",
+    "vfx_skill": "vfx/skills/bai_coc_bach_dang",
+    "sfx_attack": "sfx/attacks/vn_tran_hung_dao_attack",
+    "sfx_skill": "sfx/skills/bai_coc_bach_dang"
+   },
+   "stats_1star": {
+    "hp": 950,
+    "atk": 75,
+    "ap": 70,
+    "armor": 40,
+    "mr": 45,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "bai_coc_bach_dang",
+    "name": "Bãi Cọc Bạch Đằng",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     220,
+     380,
+     700
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "vn_son_tinh",
+   "name": "Sơn Tinh",
+   "nation_id": "VN",
+   "class_id": "DIVINE",
+   "cost": 5,
+   "visual": {
+    "model_prefab": "prefabs/units/vn_son_tinh",
+    "portrait_url": "sprites/portraits/vn_son_tinh.png",
+    "vfx_skill": "vfx/skills/nui_tan_vien",
+    "sfx_attack": "sfx/attacks/vn_son_tinh_attack",
+    "sfx_skill": "sfx/skills/nui_tan_vien"
+   },
+   "stats_1star": {
+    "hp": 1150,
+    "atk": 90,
+    "ap": 90,
+    "armor": 50,
+    "mr": 50,
+    "attack_speed": 0.8,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 110
+   },
+   "skill": {
+    "skill_id": "nui_tan_vien",
+    "name": "Núi Tản Viên",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     300,
+     550,
+     1000
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "cn_quan_vu",
+   "name": "Quan Vũ",
+   "nation_id": "CN",
+   "class_id": "GUARDIAN",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_quan_vu",
+    "portrait_url": "sprites/portraits/cn_quan_vu.png",
+    "vfx_skill": "vfx/skills/thanh_long_ho_tran",
+    "sfx_attack": "sfx/attacks/cn_quan_vu_attack",
+    "sfx_skill": "sfx/skills/thanh_long_ho_tran"
+   },
+   "stats_1star": {
+    "hp": 900,
+    "atk": 65,
+    "ap": 30,
+    "armor": 45,
+    "mr": 40,
+    "attack_speed": 0.7,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "thanh_long_ho_tran",
+    "name": "Thanh Long Hộ Trận",
+    "type": "shield",
+    "damage_type": "physical",
+    "target_policy": "SELF_ADJACENT",
+    "base_damage": [
+     250,
+     400,
+     700
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "cn_lu_bo",
+   "name": "Lữ Bố",
+   "nation_id": "CN",
+   "class_id": "WARRIOR",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_lu_bo",
+    "portrait_url": "sprites/portraits/cn_lu_bo.png",
+    "vfx_skill": "vfx/skills/vo_song_kich",
+    "sfx_attack": "sfx/attacks/cn_lu_bo_attack",
+    "sfx_skill": "sfx/skills/vo_song_kich"
+   },
+   "stats_1star": {
+    "hp": 1000,
+    "atk": 88,
+    "ap": 30,
+    "armor": 45,
+    "mr": 40,
+    "attack_speed": 0.8,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "vo_song_kich",
+    "name": "Vô Song Kích",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     240,
+     420,
+     750
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "cn_kinh_kha",
+   "name": "Kinh Kha",
+   "nation_id": "CN",
+   "class_id": "ASSASSIN",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_kinh_kha",
+    "portrait_url": "sprites/portraits/cn_kinh_kha.png",
+    "vfx_skill": "vfx/skills/doan_kiem_dich_thuy",
+    "sfx_attack": "sfx/attacks/cn_kinh_kha_attack",
+    "sfx_skill": "sfx/skills/doan_kiem_dich_thuy"
+   },
+   "stats_1star": {
+    "hp": 580,
+    "atk": 60,
+    "ap": 25,
+    "armor": 25,
+    "mr": 20,
+    "attack_speed": 0.9,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "doan_kiem_dich_thuy",
+    "name": "Đoản Kiếm Dịch Thủy",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     160,
+     280,
+     520
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "cn_hau_nghe",
+   "name": "Hậu Nghệ",
+   "nation_id": "CN",
+   "class_id": "ARCHER",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_hau_nghe",
+    "portrait_url": "sprites/portraits/cn_hau_nghe.png",
+    "vfx_skill": "vfx/skills/xa_nhat",
+    "sfx_attack": "sfx/attacks/cn_hau_nghe_attack",
+    "sfx_skill": "sfx/skills/xa_nhat"
+   },
+   "stats_1star": {
+    "hp": 560,
+    "atk": 66,
+    "ap": 30,
+    "armor": 20,
+    "mr": 25,
+    "attack_speed": 0.8,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "xa_nhat",
+    "name": "Xạ Nhật",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     150,
+     260,
+     500
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "cn_nu_oa",
+   "name": "Nữ Oa",
+   "nation_id": "CN",
+   "class_id": "MAGE",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_nu_oa",
+    "portrait_url": "sprites/portraits/cn_nu_oa.png",
+    "vfx_skill": "vfx/skills/ngu_sac_thach",
+    "sfx_attack": "sfx/attacks/cn_nu_oa_attack",
+    "sfx_skill": "sfx/skills/ngu_sac_thach"
+   },
+   "stats_1star": {
+    "hp": 760,
+    "atk": 78,
+    "ap": 95,
+    "armor": 30,
+    "mr": 40,
+    "attack_speed": 0.7,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "ngu_sac_thach",
+    "name": "Ngũ Sắc Thạch",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     200,
+     360,
+     650
+    ]
+   },
+   "gender": "female"
+  },
+  {
+   "unit_id": "cn_khong_minh",
+   "name": "Khổng Minh",
+   "nation_id": "CN",
+   "class_id": "STRATEGIST",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_khong_minh",
+    "portrait_url": "sprites/portraits/cn_khong_minh.png",
+    "vfx_skill": "vfx/skills/bat_tran_do",
+    "sfx_attack": "sfx/attacks/cn_khong_minh_attack",
+    "sfx_skill": "sfx/skills/bat_tran_do"
+   },
+   "stats_1star": {
+    "hp": 820,
+    "atk": 68,
+    "ap": 80,
+    "armor": 35,
+    "mr": 40,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "bat_tran_do",
+    "name": "Bát Trận Đồ",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     180,
+     320,
+     600
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "cn_ton_ngo_khong",
+   "name": "Tôn Ngộ Không",
+   "nation_id": "CN",
+   "class_id": "DIVINE",
+   "cost": 5,
+   "visual": {
+    "model_prefab": "prefabs/units/cn_ton_ngo_khong",
+    "portrait_url": "sprites/portraits/cn_ton_ngo_khong.png",
+    "vfx_skill": "vfx/skills/bay_hai_phep_bien_hoa",
+    "sfx_attack": "sfx/attacks/cn_ton_ngo_khong_attack",
+    "sfx_skill": "sfx/skills/bay_hai_phep_bien_hoa"
+   },
+   "stats_1star": {
+    "hp": 1100,
+    "atk": 95,
+    "ap": 80,
+    "armor": 50,
+    "mr": 45,
+    "attack_speed": 0.85,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 110
+   },
+   "skill": {
+    "skill_id": "bay_hai_phep_bien_hoa",
+    "name": "72 Phép Biến Hóa",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     320,
+     580,
+     1050
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_honda",
+   "name": "Honda Tadakatsu",
+   "nation_id": "JP",
+   "class_id": "GUARDIAN",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_honda",
+    "portrait_url": "sprites/portraits/jp_honda.png",
+    "vfx_skill": "vfx/skills/thuong_tonbokiri",
+    "sfx_attack": "sfx/attacks/jp_honda_attack",
+    "sfx_skill": "sfx/skills/thuong_tonbokiri"
+   },
+   "stats_1star": {
+    "hp": 790,
+    "atk": 58,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.7,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "thuong_tonbokiri",
+    "name": "Thương Tonbokiri",
+    "type": "shield",
+    "damage_type": "physical",
+    "target_policy": "SELF_ADJACENT",
+    "base_damage": [
+     200,
+     350,
+     600
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_musashi",
+   "name": "Miyamoto Musashi",
+   "nation_id": "JP",
+   "class_id": "WARRIOR",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_musashi",
+    "portrait_url": "sprites/portraits/jp_musashi.png",
+    "vfx_skill": "vfx/skills/nhi_thien_nhat_luu",
+    "sfx_attack": "sfx/attacks/jp_musashi_attack",
+    "sfx_skill": "sfx/skills/nhi_thien_nhat_luu"
+   },
+   "stats_1star": {
+    "hp": 880,
+    "atk": 80,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.85,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "nhi_thien_nhat_luu",
+    "name": "Nhị Thiên Nhất Lưu",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     200,
+     340,
+     600
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_hanzo",
+   "name": "Hattori Hanzo",
+   "nation_id": "JP",
+   "class_id": "ASSASSIN",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_hanzo",
+    "portrait_url": "sprites/portraits/jp_hanzo.png",
+    "vfx_skill": "vfx/skills/am_sat_trong_bong",
+    "sfx_attack": "sfx/attacks/jp_hanzo_attack",
+    "sfx_skill": "sfx/skills/am_sat_trong_bong"
+   },
+   "stats_1star": {
+    "hp": 660,
+    "atk": 68,
+    "ap": 25,
+    "armor": 30,
+    "mr": 25,
+    "attack_speed": 0.9,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "am_sat_trong_bong",
+    "name": "Ám Sát Trong Bóng",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     180,
+     300,
+     550
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_nobunaga",
+   "name": "Oda Nobunaga",
+   "nation_id": "JP",
+   "class_id": "ARCHER",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_nobunaga",
+    "portrait_url": "sprites/portraits/jp_nobunaga.png",
+    "vfx_skill": "vfx/skills/tam_doan_thiet_phao",
+    "sfx_attack": "sfx/attacks/jp_nobunaga_attack",
+    "sfx_skill": "sfx/skills/tam_doan_thiet_phao"
+   },
+   "stats_1star": {
+    "hp": 820,
+    "atk": 84,
+    "ap": 30,
+    "armor": 30,
+    "mr": 35,
+    "attack_speed": 0.75,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "tam_doan_thiet_phao",
+    "name": "Tam Đoạn Thiết Pháo",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     190,
+     340,
+     620
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_seimei",
+   "name": "Abe no Seimei",
+   "nation_id": "JP",
+   "class_id": "MAGE",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_seimei",
+    "portrait_url": "sprites/portraits/jp_seimei.png",
+    "vfx_skill": "vfx/skills/ngu_mang_tinh",
+    "sfx_attack": "sfx/attacks/jp_seimei_attack",
+    "sfx_skill": "sfx/skills/ngu_mang_tinh"
+   },
+   "stats_1star": {
+    "hp": 810,
+    "atk": 76,
+    "ap": 100,
+    "armor": 30,
+    "mr": 45,
+    "attack_speed": 0.7,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "ngu_mang_tinh",
+    "name": "Ngũ Mang Tinh",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     210,
+     380,
+     680
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_shingen",
+   "name": "Takeda Shingen",
+   "nation_id": "JP",
+   "class_id": "STRATEGIST",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_shingen",
+    "portrait_url": "sprites/portraits/jp_shingen.png",
+    "vfx_skill": "vfx/skills/phong_lam_hoa_son",
+    "sfx_attack": "sfx/attacks/jp_shingen_attack",
+    "sfx_skill": "sfx/skills/phong_lam_hoa_son"
+   },
+   "stats_1star": {
+    "hp": 780,
+    "atk": 65,
+    "ap": 58,
+    "armor": 35,
+    "mr": 35,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "phong_lam_hoa_son",
+    "name": "Phong Lâm Hỏa Sơn",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     160,
+     280,
+     520
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "jp_susanoo",
+   "name": "Susanoo",
+   "nation_id": "JP",
+   "class_id": "DIVINE",
+   "cost": 5,
+   "visual": {
+    "model_prefab": "prefabs/units/jp_susanoo",
+    "portrait_url": "sprites/portraits/jp_susanoo.png",
+    "vfx_skill": "vfx/skills/bao_to_thao_the_kiem",
+    "sfx_attack": "sfx/attacks/jp_susanoo_attack",
+    "sfx_skill": "sfx/skills/bao_to_thao_the_kiem"
+   },
+   "stats_1star": {
+    "hp": 1120,
+    "atk": 92,
+    "ap": 85,
+    "armor": 55,
+    "mr": 50,
+    "attack_speed": 0.8,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 120
+   },
+   "skill": {
+    "skill_id": "bao_to_thao_the_kiem",
+    "name": "Bão Tố Thảo Thế Kiếm",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     330,
+     600,
+     1100
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "fr_joan",
+   "name": "Joan of Arc",
+   "nation_id": "FR",
+   "class_id": "GUARDIAN",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_joan",
+    "portrait_url": "sprites/portraits/fr_joan.png",
+    "vfx_skill": "vfx/skills/co_thanh_ho_menh",
+    "sfx_attack": "sfx/attacks/fr_joan_attack",
+    "sfx_skill": "sfx/skills/co_thanh_ho_menh"
+   },
+   "stats_1star": {
+    "hp": 950,
+    "atk": 65,
+    "ap": 30,
+    "armor": 45,
+    "mr": 40,
+    "attack_speed": 0.7,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "co_thanh_ho_menh",
+    "name": "Cờ Thánh Hộ Mệnh",
+    "type": "shield",
+    "damage_type": "physical",
+    "target_policy": "SELF_ADJACENT",
+    "base_damage": [
+     250,
+     400,
+     700
+    ]
+   },
+   "gender": "female"
+  },
+  {
+   "unit_id": "fr_martel",
+   "name": "Charles Martel",
+   "nation_id": "FR",
+   "class_id": "WARRIOR",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_martel",
+    "portrait_url": "sprites/portraits/fr_martel.png",
+    "vfx_skill": "vfx/skills/bua_martel",
+    "sfx_attack": "sfx/attacks/fr_martel_attack",
+    "sfx_skill": "sfx/skills/bua_martel"
+   },
+   "stats_1star": {
+    "hp": 800,
+    "atk": 68,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.75,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "bua_martel",
+    "name": "Búa Martel",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     180,
+     300,
+     550
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "fr_lupin",
+   "name": "Arsène Lupin",
+   "nation_id": "FR",
+   "class_id": "ASSASSIN",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_lupin",
+    "portrait_url": "sprites/portraits/fr_lupin.png",
+    "vfx_skill": "vfx/skills/danh_cap_nhip_don",
+    "sfx_attack": "sfx/attacks/fr_lupin_attack",
+    "sfx_skill": "sfx/skills/danh_cap_nhip_don"
+   },
+   "stats_1star": {
+    "hp": 680,
+    "atk": 66,
+    "ap": 25,
+    "armor": 30,
+    "mr": 25,
+    "attack_speed": 0.9,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "danh_cap_nhip_don",
+    "name": "Đánh Cắp Nhịp Đòn",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     180,
+     300,
+     550
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "fr_dartagnan",
+   "name": "D'Artagnan",
+   "nation_id": "FR",
+   "class_id": "ARCHER",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_dartagnan",
+    "portrait_url": "sprites/portraits/fr_dartagnan.png",
+    "vfx_skill": "vfx/skills/ngu_lam_phao_thu",
+    "sfx_attack": "sfx/attacks/fr_dartagnan_attack",
+    "sfx_skill": "sfx/skills/ngu_lam_phao_thu"
+   },
+   "stats_1star": {
+    "hp": 580,
+    "atk": 63,
+    "ap": 30,
+    "armor": 20,
+    "mr": 25,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "ngu_lam_phao_thu",
+    "name": "Ngự Lâm Pháo Thủ",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     150,
+     260,
+     500
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "fr_nostradamus",
+   "name": "Nostradamus",
+   "nation_id": "FR",
+   "class_id": "MAGE",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_nostradamus",
+    "portrait_url": "sprites/portraits/fr_nostradamus.png",
+    "vfx_skill": "vfx/skills/tien_tri_sao_bang",
+    "sfx_attack": "sfx/attacks/fr_nostradamus_attack",
+    "sfx_skill": "sfx/skills/tien_tri_sao_bang"
+   },
+   "stats_1star": {
+    "hp": 660,
+    "atk": 62,
+    "ap": 90,
+    "armor": 25,
+    "mr": 35,
+    "attack_speed": 0.7,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "tien_tri_sao_bang",
+    "name": "Tiên Tri Sao Băng",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     180,
+     320,
+     580
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "fr_napoleon",
+   "name": "Napoleon Bonaparte",
+   "nation_id": "FR",
+   "class_id": "STRATEGIST",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_napoleon",
+    "portrait_url": "sprites/portraits/fr_napoleon.png",
+    "vfx_skill": "vfx/skills/dai_phao_austerlitz",
+    "sfx_attack": "sfx/attacks/fr_napoleon_attack",
+    "sfx_skill": "sfx/skills/dai_phao_austerlitz"
+   },
+   "stats_1star": {
+    "hp": 950,
+    "atk": 75,
+    "ap": 85,
+    "armor": 40,
+    "mr": 45,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "dai_phao_austerlitz",
+    "name": "Đại Pháo Austerlitz",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     240,
+     420,
+     750
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "fr_gevaudan",
+   "name": "Quái vật Gévaudan",
+   "nation_id": "FR",
+   "class_id": "DIVINE",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/fr_gevaudan",
+    "portrait_url": "sprites/portraits/fr_gevaudan.png",
+    "vfx_skill": "vfx/skills/cuong_san",
+    "sfx_attack": "sfx/attacks/fr_gevaudan_attack",
+    "sfx_skill": "sfx/skills/cuong_san"
+   },
+   "stats_1star": {
+    "hp": 980,
+    "atk": 88,
+    "ap": 40,
+    "armor": 45,
+    "mr": 40,
+    "attack_speed": 0.85,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "cuong_san",
+    "name": "Cuồng Săn",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     250,
+     440,
+     800
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "us_bunyan",
+   "name": "Paul Bunyan",
+   "nation_id": "US",
+   "class_id": "GUARDIAN",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/us_bunyan",
+    "portrait_url": "sprites/portraits/us_bunyan.png",
+    "vfx_skill": "vfx/skills/riu_dai_thu",
+    "sfx_attack": "sfx/attacks/us_bunyan_attack",
+    "sfx_skill": "sfx/skills/riu_dai_thu"
+   },
+   "stats_1star": {
+    "hp": 650,
+    "atk": 55,
+    "ap": 25,
+    "armor": 35,
+    "mr": 30,
+    "attack_speed": 0.7,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "riu_dai_thu",
+    "name": "Rìu Đại Thụ",
+    "type": "shield",
+    "damage_type": "physical",
+    "target_policy": "SELF_ADJACENT",
+    "base_damage": [
+     200,
+     350,
+     600
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "us_washington",
+   "name": "George Washington",
+   "nation_id": "US",
+   "class_id": "WARRIOR",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/us_washington",
+    "portrait_url": "sprites/portraits/us_washington.png",
+    "vfx_skill": "vfx/skills/vuot_song_delaware",
+    "sfx_attack": "sfx/attacks/us_washington_attack",
+    "sfx_skill": "sfx/skills/vuot_song_delaware"
+   },
+   "stats_1star": {
+    "hp": 900,
+    "atk": 78,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.8,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "vuot_song_delaware",
+    "name": "Vượt Sông Delaware",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     200,
+     340,
+     620
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "us_billy",
+   "name": "Billy the Kid",
+   "nation_id": "US",
+   "class_id": "ASSASSIN",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/us_billy",
+    "portrait_url": "sprites/portraits/us_billy.png",
+    "vfx_skill": "vfx/skills/rut_sung_chop_nhoang",
+    "sfx_attack": "sfx/attacks/us_billy_attack",
+    "sfx_skill": "sfx/skills/rut_sung_chop_nhoang"
+   },
+   "stats_1star": {
+    "hp": 660,
+    "atk": 70,
+    "ap": 25,
+    "armor": 25,
+    "mr": 25,
+    "attack_speed": 0.9,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "rut_sung_chop_nhoang",
+    "name": "Rút Súng Chớp Nhoáng",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     180,
+     300,
+     550
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "us_oakley",
+   "name": "Annie Oakley",
+   "nation_id": "US",
+   "class_id": "ARCHER",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/us_oakley",
+    "portrait_url": "sprites/portraits/us_oakley.png",
+    "vfx_skill": "vfx/skills/xa_thu_tram_phat",
+    "sfx_attack": "sfx/attacks/us_oakley_attack",
+    "sfx_skill": "sfx/skills/xa_thu_tram_phat"
+   },
+   "stats_1star": {
+    "hp": 560,
+    "atk": 63,
+    "ap": 30,
+    "armor": 20,
+    "mr": 25,
+    "attack_speed": 0.8,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "xa_thu_tram_phat",
+    "name": "Xạ Thủ Trăm Phát",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     150,
+     260,
+     500
+    ]
+   },
+   "gender": "female"
+  },
+  {
+   "unit_id": "us_tesla",
+   "name": "Nikola Tesla",
+   "nation_id": "US",
+   "class_id": "MAGE",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/us_tesla",
+    "portrait_url": "sprites/portraits/us_tesla.png",
+    "vfx_skill": "vfx/skills/thap_wardenclyffe",
+    "sfx_attack": "sfx/attacks/us_tesla_attack",
+    "sfx_skill": "sfx/skills/thap_wardenclyffe"
+   },
+   "stats_1star": {
+    "hp": 900,
+    "atk": 72,
+    "ap": 100,
+    "armor": 35,
+    "mr": 45,
+    "attack_speed": 0.8,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "thap_wardenclyffe",
+    "name": "Tháp Wardenclyffe",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     260,
+     460,
+     850
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "us_lincoln",
+   "name": "Abraham Lincoln",
+   "nation_id": "US",
+   "class_id": "STRATEGIST",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/us_lincoln",
+    "portrait_url": "sprites/portraits/us_lincoln.png",
+    "vfx_skill": "vfx/skills/tuyen_ngon_doan_ket",
+    "sfx_attack": "sfx/attacks/us_lincoln_attack",
+    "sfx_skill": "sfx/skills/tuyen_ngon_doan_ket"
+   },
+   "stats_1star": {
+    "hp": 850,
+    "atk": 68,
+    "ap": 80,
+    "armor": 35,
+    "mr": 40,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "tuyen_ngon_doan_ket",
+    "name": "Tuyên Ngôn Đoàn Kết",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     200,
+     360,
+     650
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "us_mothman",
+   "name": "Mothman",
+   "nation_id": "US",
+   "class_id": "DIVINE",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/us_mothman",
+    "portrait_url": "sprites/portraits/us_mothman.png",
+    "vfx_skill": "vfx/skills/diem_bao_canh_dem",
+    "sfx_attack": "sfx/attacks/us_mothman_attack",
+    "sfx_skill": "sfx/skills/diem_bao_canh_dem"
+   },
+   "stats_1star": {
+    "hp": 1000,
+    "atk": 85,
+    "ap": 90,
+    "armor": 40,
+    "mr": 45,
+    "attack_speed": 0.8,
+    "attack_range": 2,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "diem_bao_canh_dem",
+    "name": "Điềm Báo Cánh Đêm",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     240,
+     420,
+     760
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "az_cuauhtemoc",
+   "name": "Cuauhtémoc",
+   "nation_id": "AZ",
+   "class_id": "GUARDIAN",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/az_cuauhtemoc",
+    "portrait_url": "sprites/portraits/az_cuauhtemoc.png",
+    "vfx_skill": "vfx/skills/khien_chim_ung",
+    "sfx_attack": "sfx/attacks/az_cuauhtemoc_attack",
+    "sfx_skill": "sfx/skills/khien_chim_ung"
+   },
+   "stats_1star": {
+    "hp": 630,
+    "atk": 55,
+    "ap": 25,
+    "armor": 35,
+    "mr": 30,
+    "attack_speed": 0.7,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "khien_chim_ung",
+    "name": "Khiên Chim Ưng",
+    "type": "shield",
+    "damage_type": "physical",
+    "target_policy": "SELF_ADJACENT",
+    "base_damage": [
+     200,
+     350,
+     600
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "az_jaguar",
+   "name": "Chiến Binh Báo Đốm",
+   "nation_id": "AZ",
+   "class_id": "WARRIOR",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/az_jaguar",
+    "portrait_url": "sprites/portraits/az_jaguar.png",
+    "vfx_skill": "vfx/skills/vuot_bao_dom",
+    "sfx_attack": "sfx/attacks/az_jaguar_attack",
+    "sfx_skill": "sfx/skills/vuot_bao_dom"
+   },
+   "stats_1star": {
+    "hp": 650,
+    "atk": 60,
+    "ap": 25,
+    "armor": 30,
+    "mr": 20,
+    "attack_speed": 0.85,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "vuot_bao_dom",
+    "name": "Vuốt Báo Đốm",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     160,
+     280,
+     520
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "az_eagle",
+   "name": "Chiến Binh Đại Bàng",
+   "nation_id": "AZ",
+   "class_id": "ASSASSIN",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/az_eagle",
+    "portrait_url": "sprites/portraits/az_eagle.png",
+    "vfx_skill": "vfx/skills/sa_xuong_san_moi",
+    "sfx_attack": "sfx/attacks/az_eagle_attack",
+    "sfx_skill": "sfx/skills/sa_xuong_san_moi"
+   },
+   "stats_1star": {
+    "hp": 580,
+    "atk": 60,
+    "ap": 25,
+    "armor": 25,
+    "mr": 20,
+    "attack_speed": 0.9,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "sa_xuong_san_moi",
+    "name": "Sà Xuống Săn Mồi",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     160,
+     280,
+     520
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "az_xochiquetzal",
+   "name": "Xochiquetzal",
+   "nation_id": "AZ",
+   "class_id": "ARCHER",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/az_xochiquetzal",
+    "portrait_url": "sprites/portraits/az_xochiquetzal.png",
+    "vfx_skill": "vfx/skills/mui_ten_hoa",
+    "sfx_attack": "sfx/attacks/az_xochiquetzal_attack",
+    "sfx_skill": "sfx/skills/mui_ten_hoa"
+   },
+   "stats_1star": {
+    "hp": 700,
+    "atk": 68,
+    "ap": 40,
+    "armor": 25,
+    "mr": 30,
+    "attack_speed": 0.75,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "mui_ten_hoa",
+    "name": "Mũi Tên Hoa",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     170,
+     300,
+     560
+    ]
+   },
+   "gender": "female"
+  },
+  {
+   "unit_id": "az_quetzalcoatl",
+   "name": "Quetzalcoatl",
+   "nation_id": "AZ",
+   "class_id": "MAGE",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/az_quetzalcoatl",
+    "portrait_url": "sprites/portraits/az_quetzalcoatl.png",
+    "vfx_skill": "vfx/skills/gio_long_vu",
+    "sfx_attack": "sfx/attacks/az_quetzalcoatl_attack",
+    "sfx_skill": "sfx/skills/gio_long_vu"
+   },
+   "stats_1star": {
+    "hp": 920,
+    "atk": 70,
+    "ap": 100,
+    "armor": 35,
+    "mr": 45,
+    "attack_speed": 0.75,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "gio_long_vu",
+    "name": "Gió Lông Vũ",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     260,
+     460,
+     850
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "az_montezuma",
+   "name": "Montezuma II",
+   "nation_id": "AZ",
+   "class_id": "STRATEGIST",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/az_montezuma",
+    "portrait_url": "sprites/portraits/az_montezuma.png",
+    "vfx_skill": "vfx/skills/lich_mat_troi",
+    "sfx_attack": "sfx/attacks/az_montezuma_attack",
+    "sfx_skill": "sfx/skills/lich_mat_troi"
+   },
+   "stats_1star": {
+    "hp": 600,
+    "atk": 58,
+    "ap": 85,
+    "armor": 25,
+    "mr": 30,
+    "attack_speed": 0.7,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "lich_mat_troi",
+    "name": "Lịch Mặt Trời",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     150,
+     260,
+     500
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "az_huitzilopochtli",
+   "name": "Huitzilopochtli",
+   "nation_id": "AZ",
+   "class_id": "DIVINE",
+   "cost": 5,
+   "visual": {
+    "model_prefab": "prefabs/units/az_huitzilopochtli",
+    "portrait_url": "sprites/portraits/az_huitzilopochtli.png",
+    "vfx_skill": "vfx/skills/mat_troi_chien_tranh",
+    "sfx_attack": "sfx/attacks/az_huitzilopochtli_attack",
+    "sfx_skill": "sfx/skills/mat_troi_chien_tranh"
+   },
+   "stats_1star": {
+    "hp": 1150,
+    "atk": 92,
+    "ap": 95,
+    "armor": 50,
+    "mr": 50,
+    "attack_speed": 0.8,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 110
+   },
+   "skill": {
+    "skill_id": "mat_troi_chien_tranh",
+    "name": "Mặt Trời Chiến Tranh",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     320,
+     580,
+     1050
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "uk_beowulf",
+   "name": "Beowulf",
+   "nation_id": "UK",
+   "class_id": "DIVINE",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_beowulf",
+    "portrait_url": "sprites/portraits/uk_beowulf.png",
+    "vfx_skill": "vfx/skills/san_quai_grendel",
+    "sfx_attack": "sfx/attacks/uk_beowulf_attack",
+    "sfx_skill": "sfx/skills/san_quai_grendel"
+   },
+   "stats_1star": {
+    "hp": 880,
+    "atk": 76,
+    "ap": 35,
+    "armor": 45,
+    "mr": 40,
+    "attack_speed": 0.8,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "san_quai_grendel",
+    "name": "Săn Quái Grendel",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     210,
+     360,
+     650
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "uk_arthur",
+   "name": "King Arthur",
+   "nation_id": "UK",
+   "class_id": "GUARDIAN",
+   "cost": 4,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_arthur",
+    "portrait_url": "sprites/portraits/uk_arthur.png",
+    "vfx_skill": "vfx/skills/excalibur_ho_vuong",
+    "sfx_attack": "sfx/attacks/uk_arthur_attack",
+    "sfx_skill": "sfx/skills/excalibur_ho_vuong"
+   },
+   "stats_1star": {
+    "hp": 1080,
+    "atk": 85,
+    "ap": 30,
+    "armor": 50,
+    "mr": 45,
+    "attack_speed": 0.75,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 100
+   },
+   "skill": {
+    "skill_id": "excalibur_ho_vuong",
+    "name": "Excalibur Hộ Vương",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     240,
+     420,
+     750
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "uk_spring_heeled_jack",
+   "name": "Spring-heeled Jack",
+   "nation_id": "UK",
+   "class_id": "ASSASSIN",
+   "cost": 3,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_spring_heeled_jack",
+    "portrait_url": "sprites/portraits/uk_spring_heeled_jack.png",
+    "vfx_skill": "vfx/skills/nhay_bong_dem",
+    "sfx_attack": "sfx/attacks/uk_spring_heeled_jack_attack",
+    "sfx_skill": "sfx/skills/nhay_bong_dem"
+   },
+   "stats_1star": {
+    "hp": 780,
+    "atk": 78,
+    "ap": 30,
+    "armor": 30,
+    "mr": 30,
+    "attack_speed": 0.9,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 90
+   },
+   "skill": {
+    "skill_id": "nhay_bong_dem",
+    "name": "Nhảy Bóng Đêm",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     210,
+     360,
+     650
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "uk_robin",
+   "name": "Robin Hood",
+   "nation_id": "UK",
+   "class_id": "ARCHER",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_robin",
+    "portrait_url": "sprites/portraits/uk_robin.png",
+    "vfx_skill": "vfx/skills/mui_ten_sherwood",
+    "sfx_attack": "sfx/attacks/uk_robin_attack",
+    "sfx_skill": "sfx/skills/mui_ten_sherwood"
+   },
+   "stats_1star": {
+    "hp": 660,
+    "atk": 70,
+    "ap": 30,
+    "armor": 25,
+    "mr": 30,
+    "attack_speed": 0.8,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "mui_ten_sherwood",
+    "name": "Mũi Tên Sherwood",
+    "type": "aoe",
+    "damage_type": "physical",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     170,
+     300,
+     560
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "uk_morgana",
+   "name": "Morgana",
+   "nation_id": "UK",
+   "class_id": "MAGE",
+   "cost": 1,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_morgana",
+    "portrait_url": "sprites/portraits/uk_morgana.png",
+    "vfx_skill": "vfx/skills/suong_mu_avalon",
+    "sfx_attack": "sfx/attacks/uk_morgana_attack",
+    "sfx_skill": "sfx/skills/suong_mu_avalon"
+   },
+   "stats_1star": {
+    "hp": 550,
+    "atk": 55,
+    "ap": 90,
+    "armor": 20,
+    "mr": 30,
+    "attack_speed": 0.7,
+    "attack_range": 4,
+    "start_mana": 0,
+    "max_mana": 70
+   },
+   "skill": {
+    "skill_id": "suong_mu_avalon",
+    "name": "Sương Mù Avalon",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     160,
+     280,
+     520
+    ]
+   },
+   "gender": "female"
+  },
+  {
+   "unit_id": "uk_merlin",
+   "name": "Merlin",
+   "nation_id": "UK",
+   "class_id": "STRATEGIST",
+   "cost": 5,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_merlin",
+    "portrait_url": "sprites/portraits/uk_merlin.png",
+    "vfx_skill": "vfx/skills/tien_tri_camelot",
+    "sfx_attack": "sfx/attacks/uk_merlin_attack",
+    "sfx_skill": "sfx/skills/tien_tri_camelot"
+   },
+   "stats_1star": {
+    "hp": 1000,
+    "atk": 75,
+    "ap": 100,
+    "armor": 40,
+    "mr": 50,
+    "attack_speed": 0.75,
+    "attack_range": 3,
+    "start_mana": 0,
+    "max_mana": 110
+   },
+   "skill": {
+    "skill_id": "tien_tri_camelot",
+    "name": "Tiên Tri Camelot",
+    "type": "aoe",
+    "damage_type": "magic",
+    "target_policy": "HIGHEST_DPS_CLUSTER",
+    "base_damage": [
+     320,
+     580,
+     1050
+    ]
+   },
+   "gender": "male"
+  },
+  {
+   "unit_id": "uk_lancelot",
+   "name": "Lancelot",
+   "nation_id": "UK",
+   "class_id": "WARRIOR",
+   "cost": 2,
+   "visual": {
+    "model_prefab": "prefabs/units/uk_lancelot",
+    "portrait_url": "sprites/portraits/uk_lancelot.png",
+    "vfx_skill": "vfx/skills/kiem_si_ho_quang",
+    "sfx_attack": "sfx/attacks/uk_lancelot_attack",
+    "sfx_skill": "sfx/skills/kiem_si_ho_quang"
+   },
+   "stats_1star": {
+    "hp": 760,
+    "atk": 68,
+    "ap": 30,
+    "armor": 40,
+    "mr": 35,
+    "attack_speed": 0.85,
+    "attack_range": 1,
+    "start_mana": 0,
+    "max_mana": 80
+   },
+   "skill": {
+    "skill_id": "kiem_si_ho_quang",
+    "name": "Kiếm Sĩ Hồ Quang",
+    "type": "damage",
+    "damage_type": "physical",
+    "target_policy": "NEAREST",
+    "base_damage": [
+     190,
+     320,
+     580
+    ]
+   },
+   "gender": "male"
+  }
+ ]
 }

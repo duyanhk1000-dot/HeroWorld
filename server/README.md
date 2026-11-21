@@ -58,10 +58,17 @@ matchmaking, rooms, the 20 Hz loop and reconnect still work.
 npm run typecheck
 npm run build   # -> dist/, start with npm start
 npm test        # unit smoke tests (sim determinism, damage, star scaling,
-                # loser damage, economy gold math, queue + bot-fill)
+                # loser damage, economy gold math, queue + bot-fill) +
+                # anti-cheat unit tests (rate limit, validation, replay
+                # verification, telemetry aggregation) — 52 + 66 checks
+npm run test:anticheat  # only the M4 anti-cheat unit tests
 npm run test:e2e  # boots the real server (PORT 2568, M2_FAST=1), 8 real
                 # clients queue → join → buy/place → combat; checks combat
-                # events only reach the right pair. Needs ~40 s.
+                # events only reach the right pair, plus M4 wire checks
+                # (rate-limit trip + lock + disconnect, replay re-verify,
+                # telemetry counts, report script). Needs ~60 s.
+npm run telemetry:report -- [logfile]  # meta report from a JSONL
+                # telemetry log (server must run with TELEMETRY_LOG_PATH set)
 ```
 
 ## Queue flow (M2)
@@ -112,6 +119,84 @@ mulberry32. Any formula change must land in both `m1_sim.gd` and `sim.ts`
    casual / 90 s ranked, guest cannot join ranked.
 5. **Godot web export** — static site in `render.yaml` stays commented out
    until export templates are installed and the export is built.
+
+## M4 — Anti-cheat + telemetry (SRS §13.2, §11.4)
+
+### Rate-limit (`src/rateLimit.ts`, wired in `BattleRoom`)
+- Per player, sliding 1 s window: **10 actions/s in PREP_PHASE,
+  2/s in any other phase**. A human client sends a few actions per
+  second; anything above that is automation or a broken client.
+- A trip → `s2c_error` `RATE_LIMITED`, the action is dropped, and the
+  player's prep actions are **locked until the end of the current
+  round** (SRS §13.2). Trips are logged (`rate_limited` telemetry).
+- **5 trips in one match → the session is dropped**
+  (`rate_limit_disconnect` + `cheat_suspect` reason
+  `rate_limit_exceeded`). There is deliberately no account-ban system
+  yet — a ban needs a persistent store + an appeal flow; see §9 of
+  `docs/online-architecture.md`.
+- SRS names Redis as the rate-limit store; this server runs as a single
+  worker (Render free tier), so the limiter is in-memory per process.
+  Multi-worker deploys must move it to Redis (same algorithm, keyed by
+  account id).
+
+### Validation hardening (`src/validate.ts`, `src/economy.ts`)
+- `round_id` is now **required** (missing used to be silently
+  accepted), must be an integer equal to the current round.
+- All indices must be integers in range (shop 0–4, board 0–55, bench
+  0–8). NaN/float/out-of-range values are rejected — without this,
+  `board[NaN]` would write a junk property onto the board array.
+- Optional client `action_id` (protocol, backward compatible): a repeat
+  of the same id in the same round is rejected as `DUPLICATE_ACTION`.
+- Buys return a machine-readable reason (`buyShopSlotDetailed`:
+  `empty_slot` / `insufficient_gold` / `pool_empty` / `bench_full` /
+  `bad_slot` / `no_unit`) instead of a generic `BUY_FAILED`.
+- Every rejection logs `action_rejected` + `cheat_suspect` telemetry
+  with the exact reason. `cheat_suspect` is an AUDIT event, not an
+  automatic ban: benign reasons (`insufficient_gold`, `empty_slot`)
+  and abuse patterns (`duplicate_action`, `stale_round`,
+  `rate_limit_exceeded`, `replay_mismatch`) are distinguished by the
+  `reason` field.
+- Post-action invariant check (gold ≥ 0, bench ≤ 9, board ≤ level):
+  a violation is logged as `cheat_suspect` reason
+  `invariant_violation` — it should never fire; if it does, it is a
+  server bug or tampering, never a client crash.
+
+### Replay verification (`src/replay.ts`, `src/replayStore.ts`)
+- The sim is deterministic, so every pair's combat can be re-run after
+  the fact: BattleRoom records the replay input per pair when combat is
+  built (boards, pair seed, iid starts, kind, stage/round) and the live
+  result at round resolve (SHA-256 of the SimEvent JSON, winner, ticks).
+- Verification re-builds both sides, steps exactly as many ticks as the
+  live combat ran, force-decides by HP fraction at the cap (same rule
+  as the room), and compares hash + winner + ticks. A mismatch logs
+  `replay_mismatch` + `cheat_suspect` reason `replay_mismatch`.
+- Verification never runs in the 20 Hz loop: it is scheduled with
+  `setImmediate` after the round resolves, and can be re-run on demand
+  via `GET /debug/replay/:matchId` (SRS §13.2 "replay công khai sau
+  trận"). Records are kept in memory (last 20 matches, 60 rounds
+  each); durable public replays (persist to Supabase) are future work.
+- The round seed stays server-side until the round ends — replay
+  inputs are recorded at combat build time and never sent to clients.
+
+### Telemetry aggregation (`src/telemetry.ts`, `src/telemetryAggregate.ts`)
+- New events: `round_lineup` (end-of-round board + nations/classes/
+  bonds), per-player `round_result` with the same lineup summary,
+  `bond_trigger` (counted per bond per round), `match_summary`
+  (standings), `action_rejected`, `cheat_suspect`, `rate_limited`,
+  `rate_limit_disconnect`, `replay_verified`, `replay_mismatch`.
+- Reports (SRS §11.4 meta): hero pick counts + share by nation/class,
+  round win rate by nation / class / bond, bond trigger counts,
+  rejected actions by code, rate-limit trips/disconnects, cheat
+  suspects by reason, replay results, per-player round W/L.
+- Live reports: `GET /debug/telemetry` (all stored matches) and
+  `GET /debug/telemetry/:matchId` (in-memory store, no DB needed).
+- Offline reports: run the server with `TELEMETRY_LOG_PATH` set to
+  write a JSONL log, then
+  `npm run telemetry:report -- <logfile> [--match <matchId>]`.
+  The e2e test does exactly this and asserts real numbers (buys ≥ 8).
+- Debug endpoints are guarded by `ADMIN_TOKEN` when set (`x-admin-token`
+  header or `?token=`); when unset they are open — local dev only,
+  never on a public instance.
 
 ## Ghi chú kỹ thuật (21/11/2026)
 
